@@ -1,0 +1,51 @@
+"""
+Read mapping with PEANUT (http://peanut.readthedocs.org).
+
+Expects a global variable CONFIG (e.g. parsed from json) of at least the
+following structure, assuming that the desired reference sequence is some genome
+to be found under the given path, and two units A and B have been sequenced with Illumina, 
+the first paired and the second single end:
+
+{
+    "references": {
+        "genome": "path/to/genome.fasta"
+    }
+    "samples": {
+        "A": ["A"],
+        "B": ["B"]
+    }
+    "units": {
+        "A":
+            ["path/to/A_R1.fastq.gz", "path/to/A_R2.fastq.gz"],
+        "B":
+            ["path/to/B.fastq.gz"]
+    }
+    "platform": "Illumina"
+}
+
+Note the separation between samples and units that allows to have more than
+one sequencing run for each sample, or multiple lanes per sample.
+"""
+
+
+UNIT_TO_SAMPLE = {unit: sample for sample, units in CONFIG["samples"].items() for unit in units}
+
+
+ruleorder: map_peanut > sample_merge
+
+
+rule map_peanut:
+    input:
+        lambda wildcards: CONFIG["references"][wildcards.reference], CONFIG["units"][wildcards.unit]
+    output:
+        "mapping/{reference}/{unit}.bam"
+    params:
+        sample=lambda wildcards: UNIT_TO_SAMPLE[wildcards.unit]
+    log:
+        "mapping/log/{reference}/{unit}.log"
+    threads: 8
+    resources: gpu=1
+    shell:
+        "peanut map "
+        "--read-group ID:{wildcards.unit} SM:{params.sample} PL:{CONFIG[platform]}"
+        "--threads {threads} {input} | samtools -Sbh - > {output}"

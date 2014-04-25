@@ -1,0 +1,54 @@
+"""
+Rules for modifying SAM of BAM files.
+"""
+
+
+rule bam_index:
+    input:
+        "{prefix}.bam"
+    output:
+        "{prefix}.bam.bai"
+    shell:
+        "samtools index {input}"
+
+
+rule bam_sort:
+    input:
+        "{prefix}.bam"
+    output:
+        "{prefix}.sorted.bam"
+    shell:
+        "samtools sort {input} {wildcards.prefix}.sorted"
+
+
+rule sam_to_bam:
+    input:
+        "{prefix}.sam"
+    output:
+        "{prefix}.bam"
+    shell:
+        "samtools view -Sbh {input} > {output}"
+
+
+rule bam_stats:
+    input:
+        "{prefix}.bam"
+    output:
+        "{prefix}.stats.txt"
+    shell:
+        "samtools idxstats {input} > {output}"
+
+
+rule sample_merge:
+    """
+    Merge bam files for multiple units into one for the given sample.
+    If the sample has only one unit, this rule will not be applied.
+    """
+    input:
+        lambda wildcards: expand(
+            "mapping/{reference}/{unit}.bam",
+            unit=CONFIG["samples"][wildcards.sample])
+    output:
+        "mapping/{reference}/{sample}.bam"
+    shell:
+        "samtools merge {output} {input}"

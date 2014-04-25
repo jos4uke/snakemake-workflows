@@ -1,0 +1,51 @@
+"""
+Read mapping with BWA MEM (http://bio-bwa.sourceforge.net).
+
+Expects a global variable CONFIG (e.g. parsed from json) of at least the
+following structure, assuming that the desired reference sequence is some genome
+to be found under the given path, and two units A and B have been sequenced with Illumina, 
+the first paired and the second single end:
+
+{
+    "references": {
+        "genome": "path/to/genome.fasta"
+    }
+    "samples": {
+        "A": ["A"],
+        "B": ["B"]
+    }
+    "units": {
+        "A":
+            ["path/to/A_R1.fastq.gz", "path/to/A_R2.fastq.gz"],
+        "B":
+            ["path/to/B.fastq.gz"]
+    }
+    "platform": "Illumina"
+}
+
+Note the separation between samples and units that allows to have more than
+one sequencing run for each sample, or multiple lanes per sample.
+"""
+
+
+UNIT_TO_SAMPLE = {unit: sample for sample, units in CONFIG["samples"].items() for unit in units}
+
+
+ruleorder: map_bwa > sample_merge
+
+
+rule map_bwa:
+    input:
+        lambda wildcards: CONFIG["references"][wildcards.reference], CONFIG["units"][wildcards.unit]
+    output:
+        "mapping/{reference}/{unit}.bam"
+    params:
+        sample=lambda wildcards: UNIT_TO_SAMPLE[wildcards.unit]
+    log:
+        "mapping/log/{reference}/{unit}.log"
+    threads: 8
+    shell:
+        "bwa mem "
+        r"-R '@RG\tID:{wildcards.unit}\tSM:{params.sample}\tPL:CONFIG[platform]"
+        "-t {threads} {input} "
+        "> samtools view -Sbh - > {output} 2> {log}"
