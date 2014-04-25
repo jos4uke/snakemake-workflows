@@ -1,5 +1,5 @@
 """
-Rules for modifying SAM of BAM files.
+Rules for modifying SAM or BAM files.
 """
 
 
