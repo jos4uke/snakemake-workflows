@@ -40,7 +40,7 @@ ruleorder: map_peanut > sample_merge
 
 rule map_peanut:
     input:
-        lambda wildcards: CONFIG["references"][wildcards.reference], CONFIG["units"][wildcards.unit]
+        lambda wildcards: CONFIG["units"][wildcards.unit], CONFIG["references"][wildcards.reference]
     output:
         "mapping/{reference}/{unit}.bam"
     params:
