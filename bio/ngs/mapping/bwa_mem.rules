@@ -28,6 +28,10 @@ one sequencing run for each sample, or multiple lanes per sample.
 """
 
 
+include:
+    "https://bitbucket.org/johanneskoester/snakemake-workflows/raw/master/bio/ngs/mapping/samfiles.rules"
+
+
 UNIT_TO_SAMPLE = {unit: sample for sample, units in CONFIG["samples"].items() for unit in units}
 
 
