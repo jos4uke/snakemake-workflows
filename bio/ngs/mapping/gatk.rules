@@ -1,0 +1,58 @@
+"""
+GATK based postprocessing of BAM files. Indels can be realigned and base qualities
+can be recalibrated.
+
+Expects a global variable CONFIG (e.g. parsed from json) of at least the
+following structure, assuming that the desired reference sequence is some genome
+to be found under the given path:
+
+{
+    "references": {
+        "genome": "path/to/genome.fasta"
+    }
+}
+
+Note the separation between samples and units that allows to have more than
+one sequencing run for each sample, or multiple lanes per sample.
+"""
+
+__author__ = "Johannes Köster"
+__license__ = "MIT"
+
+
+rule gatk_realign_intervals:
+    input:
+        ref=_get_ref,
+        bam="mapping/{reference}/{prefix}.bam"
+    output:
+        temp("mapping/{reference}/{prefix}.intervals")
+    shell:
+        "gatk -T RealignerTargetCreator -R {input.ref} "
+        "-I {input.bam} -o {output}"
+
+
+rule gatk_realign:
+    input:
+        ref=_get_ref,
+        bam="mapping/{reference}/{prefix}.bam",
+        intervals="mapping/{reference}/{prefix}.intervals"
+    output:
+        "mapping/{reference}/{prefix}.realigned.bam"
+    shell:
+        "gatk -T IndelRealigner -R {input.ref} "
+        "-I {input.bam} -targetIntervals {input.intervals} "
+        "-o {output}"
+
+
+rule gatk_recalibrate_bam:
+    input:
+        ref=_get_ref,
+        bam="mapping/{reference}/{prefix}.bam"
+    output:
+        "mapping/{reference}/{prefix}.recalibrated.bam"
+    shell:
+        "gatk -T PrintReads -R {input.ref} -I {input.bam} -o {output}"
+
+
+def _get_ref(wildcards):
+    return CONFIG["references"][wildcards.reference]

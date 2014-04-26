@@ -9,17 +9,17 @@ the first paired and the second single end:
 {
     "references": {
         "genome": "path/to/genome.fasta"
-    }
+    },
     "samples": {
         "A": ["A"],
         "B": ["B"]
-    }
+    },
     "units": {
         "A":
             ["path/to/A_R1.fastq.gz", "path/to/A_R2.fastq.gz"],
         "B":
             ["path/to/B.fastq.gz"]
-    }
+    },
     "platform": "Illumina"
 }
 
@@ -31,7 +31,7 @@ one sequencing run for each sample, or multiple lanes per sample.
 UNIT_TO_SAMPLE = {unit: sample for sample, units in CONFIG["samples"].items() for unit in units}
 
 
-rule map_peanut:
+rule peanut_map:
     input:
         lambda wildcards: CONFIG["units"][wildcards.unit], CONFIG["references"][wildcards.reference]
     output:
