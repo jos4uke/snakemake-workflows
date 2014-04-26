@@ -42,13 +42,16 @@ rule bam_stats:
 rule sample_merge:
     """
     Merge bam files for multiple units into one for the given sample.
-    If the sample has only one unit, this rule will not be applied.
+    If the sample has only one unit, a symlink will be created.
     """
     input:
         lambda wildcards: expand(
-            "mapping/{reference}/{unit}.bam",
+            "mapping/{reference}/units/{unit}.bam",
             unit=CONFIG["samples"][wildcards.sample])
     output:
-        "mapping/{reference}/{sample}.bam"
-    shell:
-        "samtools merge {output} {input}"
+        "mapping/{reference}/samples/{sample}.bam"
+    run:
+        if len(input) > 1:
+            shell("samtools merge {output} {input}")
+        else:
+            shell("ln -s {input} {output} && touch -h {output}")
