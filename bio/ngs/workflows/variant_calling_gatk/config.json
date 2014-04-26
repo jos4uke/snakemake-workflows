@@ -1,0 +1,16 @@
+{
+    "references": {
+        "genome": "path/to/genome.fasta"
+    },
+    "samples": {
+        "A": ["A"],
+        "B": ["B"]
+    },
+    "units": {
+        "A":
+            ["path/to/A_R1.fastq.gz", "path/to/A_R2.fastq.gz"],
+        "B":
+            ["path/to/B.fastq.gz"]
+    },
+    "dbsnp": "path/to/dbsnp.vcf"
+}
