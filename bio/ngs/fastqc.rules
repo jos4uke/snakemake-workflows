@@ -1,3 +1,10 @@
+"""
+Rules for analysing fasta files with FastQC.
+
+For usage, include this in your workflow.
+"""
+
+
 __author__ "Johannes Köster"
 __license__ = "MIT"
 

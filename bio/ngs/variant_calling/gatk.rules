@@ -2,6 +2,8 @@
 GATK haplotype calling using the workflow suggested in 
 https://www.broadinstitute.org/gatk/guide/topic?name=methods#methods3893
 
+For usage, include this in your workflow.
+
 Expects a global variable CONFIG (e.g. parsed from json) of at least the
 following structure, assuming that the desired reference sequence is some genome
 to be found under the given path, and two units A and B have been sequenced.
@@ -38,12 +40,13 @@ rule gatk_haplotype_caller:
         bams=_get_bams
     output:
         "variant_calling/{reference}/{sample}.gvcf"
+    threads: 8
     run:
         bams = gatk_multi_arg("-I", input.bams)
         shell(
             "gatk -T HaplotypeCaller -R {input.ref} {bams} "
             "--emitRefConfidence GVCF --variant_index_type LINEAR "
-            "--dbsnp {CONFIG[dbsnp]} "
+            "--dbsnp {CONFIG[dbsnp]} -nct {threads} "
             "--variant_index_parameter 128000 -o {output}")
 
 
@@ -53,10 +56,11 @@ rule gatk_genotyping:
         gvcfs=expand("variant_calling/{{reference}}/{sample}.gvcf", sample=CONFIG["samples"])
     output:
         "variant_calling/{reference}/all.calls.vcf"
+    threads: 8
     run:
         gvcfs = _gatk_multi_arg("--variant", input.gvcfs)
         shell(
-            "gatk -T GenotypeGVCFs {gvcfs} "
+            "gatk -T GenotypeGVCFs {gvcfs} -nt {threads} "
             "--dbsnp {CONFIG[dbsnp]} -o {output}")
 
 

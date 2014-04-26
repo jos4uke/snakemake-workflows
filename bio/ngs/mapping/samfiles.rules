@@ -1,6 +1,12 @@
 """
 Rules for modifying SAM or BAM files.
+
+For usage, include this in your workflow.
 """
+
+
+__author__ = "Johannes Köster"
+__license__ = "MIT
 
 
 rule bam_index:
