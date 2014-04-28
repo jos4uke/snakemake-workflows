@@ -31,7 +31,7 @@ one sequencing run for each sample, or multiple lanes per sample.
 
 
 __author__ = "Johannes Köster"
-__license__ = "MIT
+__license__ = "MIT"
 
 
 UNIT_TO_SAMPLE = {unit: sample for sample, units in CONFIG["samples"].items() for unit in units}
@@ -39,9 +39,10 @@ UNIT_TO_SAMPLE = {unit: sample for sample, units in CONFIG["samples"].items() fo
 
 rule bwa_mem_map:
     input:
-        lambda wildcards: CONFIG["references"][wildcards.reference], CONFIG["units"][wildcards.unit]
+        lambda wildcards: CONFIG["references"][wildcards.reference],
+        lambda wildcards: CONFIG["units"][wildcards.unit]
     output:
-        "mapping/{reference}/units/{unit}.bam"
+        "mapping/{reference}/units/{unit,[^\.]+}.bam"
     params:
         sample=lambda wildcards: UNIT_TO_SAMPLE[wildcards.unit]
     log:

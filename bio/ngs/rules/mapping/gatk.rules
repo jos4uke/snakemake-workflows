@@ -12,7 +12,9 @@ to be found under the given path:
     "references": {
         "genome": "path/to/genome.fasta"
     },
-    "dbsnp": "path/to/dbsnp.vcf"
+    "known_variants": {
+        "dbsnp": "path/to/dbsnp.vcf"
+    }
 }
 """
 
@@ -21,15 +23,19 @@ __author__ = "Johannes Köster"
 __license__ = "MIT"
 
 
+def _get_ref(wildcards):
+    return CONFIG["references"][wildcards.reference]
+
+
 rule gatk_realign_info:
     input:
         ref=_get_ref,
         bam="mapping/{reference}/{prefix}.bam"
     output:
-        temp("mapping/{reference}/{prefix}.realign.intervals")
+        temp("mapping/{reference,[^/]+}/{prefix}.realign.intervals")
     shell:
         "gatk -T RealignerTargetCreator -R {input.ref} "
-        "-I {input.bam} -known {CONFIG[dbsnp]} "
+        "-I {input.bam} -known {CONFIG[known_variants][dbsnp]} "
         "-o {output}"
 
 
@@ -39,7 +45,7 @@ rule gatk_realign_bam:
         bam="mapping/{reference}/{prefix}.bam",
         intervals="mapping/{reference}/{prefix}.realign.intervals"
     output:
-        "mapping/{reference}/{prefix}.realigned.bam"
+        "mapping/{reference,[^/]+}/{prefix}.realigned.bam"
     shell:
         "gatk -T IndelRealigner -R {input.ref} "
         "-I {input.bam} -targetIntervals {input.intervals} "
@@ -51,10 +57,10 @@ rule gatk_recalibrate_info:
         ref=_get_ref,
         bam="mapping/{reference}/{prefix}.bam"
     output:
-        temp("mapping/{reference}/{prefix}.recalibrate.grp")
+        temp("mapping/{reference,[^/]+}/{prefix}.recalibrate.grp")
     shell:
         "gatk -T BaseRecalibrator -R {input.ref} "
-        "-I {input.bam} -knownSites {CONFIG[dbsnp]} "
+        "-I {input.bam} -knownSites {CONFIG[known_variants][dbsnp]} "
         "-o {output}"
 
 
@@ -64,12 +70,8 @@ rule gatk_recalibrate_bam:
         bam="mapping/{reference}/{prefix}.bam",
         grp="mapping/{reference}/{prefix}.recalibrate.grp"
     output:
-        "mapping/{reference}/{prefix}.recalibrated.bam"
+        "mapping/{reference,[^/]+}/{prefix}.recalibrated.bam"
     shell:
         "gatk -T PrintReads -R {input.ref} "
         "-I {input.bam} -BQSR {input.grp} "
         "-o {output}"
-
-
-def _get_ref(wildcards):
-    return CONFIG["references"][wildcards.reference]

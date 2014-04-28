@@ -23,7 +23,9 @@ to be found under the given path, and two units A and B have been sequenced.
         "B":
             ["path/to/B.fastq.gz"]
     },
-    "dbsnp": "path/to/dbsnp.vcf"
+    "known_variants": {
+        "dbsnp": "path/to/dbsnp.vcf"
+    }
 }
 
 Note the separation between samples and units that allows to have more than
@@ -31,8 +33,23 @@ one sequencing run for each sample, or multiple lanes per sample.
 """
 
 
-__author__ "Johannes Köster"
+__author__ = "Johannes Köster"
 __license__ = "MIT"
+
+
+def _get_ref(wildcards):
+    return CONFIG["references"][wildcards.reference]
+
+
+def _get_bams(wildcards):
+    return expand(
+        "mapping/{reference}/units/{unit}.sorted.realigned.recalibrated.bam",
+        reference=wildcards.reference,
+        unit=CONFIG["samples"][wildcards.sample])
+
+
+def _gatk_multi_arg(flag, files):
+    return flag + flag.join(files)
 
 
 rule gatk_haplotype_caller:
@@ -56,25 +73,10 @@ rule gatk_genotyping:
         ref=_get_ref,
         gvcfs=expand("variant_calling/{{reference}}/{sample}.gvcf", sample=CONFIG["samples"])
     output:
-        "variant_calling/{reference}/all.calls.vcf"
+        "variant_calling/{reference}/all.vcf"
     threads: 8
     run:
         gvcfs = _gatk_multi_arg("--variant", input.gvcfs)
         shell(
             "gatk -T GenotypeGVCFs {gvcfs} -nt {threads} "
             "--dbsnp {CONFIG[dbsnp]} -o {output}")
-
-
-def _get_ref(wildcards):
-    return CONFIG["references"][wildcards.reference]
-
-
-def _get_bams(wildcards):
-    return expand(
-        "mapping/{reference}/{unit}.sorted.realigned.recalibrated.bam",
-        reference=wildcards.reference,
-        unit=CONFIG["samples"][wildcards.sample])
-
-
-def _gatk_multi_arg(flag, files):
-    return flag + flag.join(files)

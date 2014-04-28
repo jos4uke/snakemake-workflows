@@ -39,7 +39,8 @@ UNIT_TO_SAMPLE = {unit: sample for sample, units in CONFIG["samples"].items() fo
 
 rule peanut_map:
     input:
-        lambda wildcards: CONFIG["units"][wildcards.unit], CONFIG["references"][wildcards.reference]
+        lambda wildcards: CONFIG["units"][wildcards.unit],
+        lambda wildcards: CONFIG["references"][wildcards.reference]
     output:
         "mapping/{reference}/units/{unit}.bam"
     params:
