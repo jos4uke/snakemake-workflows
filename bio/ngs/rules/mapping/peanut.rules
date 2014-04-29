@@ -54,5 +54,5 @@ rule peanut_map:
     resources: gpu=1
     shell:
         "peanut map {params.custom} "
-        "--read-group ID:{wildcards.unit} SM:{params.sample} PL:{CONFIG[platform]}"
+        "--read-group ID:{wildcards.unit} SM:{params.sample} PL:{CONFIG[platform]} "
         "--threads {threads} {input} 2> {log} | samtools view -Sbh - > {output}"

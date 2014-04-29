@@ -56,6 +56,6 @@ rule bwa_mem_map:
     threads: 8
     shell:
         "bwa mem {params.custom} "
-        r"-R '@RG\tID:{wildcards.unit}\tSM:{params.sample}\tPL:CONFIG[platform]' "
+        r"-R '@RG\tID:{wildcards.unit}\tSM:{params.sample}\tPL:{CONFIG[platform]}' "
         "-t {threads} {input}  2> {log} "
         "| samtools view -Sbh - > {output}"
