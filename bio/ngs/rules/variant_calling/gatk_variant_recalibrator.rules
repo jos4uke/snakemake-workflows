@@ -54,7 +54,10 @@ rule gatk_variant_recalibration:
         tranches=temp("variant_calling/{reference}/{prefix}.{type,(snp|indel)}.tranches"),
         plotting=temp("variant_calling/{reference}/{prefix}.{type,(snp|indel)}.plotting.R")
     params:
-        _get_recal_params
+        _get_recal_params,
+        CONFIG.get("params_gatk", "")
+    log:
+        "variant_calling/log/{reference}/{prefix}.{type}_recalibrate_info.log"
     shell:
         "gatk -T VariantRecalibrator -R {input.ref} "
         "-input {input.vcf} "
@@ -62,7 +65,7 @@ rule gatk_variant_recalibration:
         "-tranche 100.0 -tranche 99.9 -tranche 99.0 -tranche 90.0 "
         "-recalFile {output.recal} "
         "-tranchesFile {output.tranches} "
-        "-rscriptFile {output.plotting}"
+        "-rscriptFile {output.plotting} >& {log}"
 
 
 rule gatk_apply_variant_recalibration:
@@ -74,9 +77,12 @@ rule gatk_apply_variant_recalibration:
     output:
         "variant_calling/{reference}/{prefix}.{type,(snp|indel)}_recalibrated.vcf"
     params:
-        mode=lambda wildcards: wildcards.type.upper()
+        mode=lambda wildcards: wildcards.type.upper(),
+        custom=CONFIG.get("params_gatk", "")
+    log:
+        "variant_calling/log/{reference}/{prefix}.{type}_recalibrate.log"
     shell:
         "gatk -T ApplyRecalibration -R {input.ref} "
-        "-input {input.vcf} -mode {params.mode} "
+        "-input {input.vcf} -mode {params.mode} {params.custom} "
         "--ts_filter_level 99.9 "
-        "-o {output}"
+        "-o {output} >& {log}"

@@ -1,3 +1,5 @@
+# vim: syntax=python expandtab
+
 """
 GATK haplotype calling using the workflow suggested in 
 https://www.broadinstitute.org/gatk/guide/topic?name=methods#methods3893
@@ -41,11 +43,23 @@ def _get_ref(wildcards):
     return CONFIG["references"][wildcards.reference]
 
 
-def _get_bams(wildcards):
+def _expand_mapping(pattern, wildcards):
     return expand(
-        "mapping/{reference}/units/{unit}.sorted.realigned.recalibrated.bam",
+        pattern,
         reference=wildcards.reference,
         unit=CONFIG["samples"][wildcards.sample])
+
+
+def _get_bams(wildcards):
+    return _expand_mapping(
+        "mapping/{reference}/units/{unit}.sorted.realigned.recalibrated.bam",
+        wildcards)
+
+
+def _get_bais(wildcards):
+    return _expand_mapping(
+        "mapping/{reference}/units/{unit}.sorted.realigned.recalibrated.bam.bai",
+        wildcards)
 
 
 def _gatk_multi_arg(flag, files):
@@ -54,18 +68,23 @@ def _gatk_multi_arg(flag, files):
 
 rule gatk_haplotype_caller:
     input:
+        _get_bais,
         ref=_get_ref,
         bams=_get_bams
     output:
         "variant_calling/{reference}/{sample}.gvcf"
+    params:
+        custom=CONFIG.get("params_gatk", "")
+    log:
+        "variant_calling/log/{reference}/{sample}.genotype_info.log"
     threads: 8
     run:
         bams = gatk_multi_arg("-I", input.bams)
         shell(
-            "gatk -T HaplotypeCaller -R {input.ref} {bams} "
+            "gatk -T HaplotypeCaller -R {input.ref} {bams} {params.custom} "
             "--emitRefConfidence GVCF --variant_index_type LINEAR "
             "--dbsnp {CONFIG[dbsnp]} -nct {threads} "
-            "--variant_index_parameter 128000 -o {output}")
+            "--variant_index_parameter 128000 -o {output} >& {log}")
 
 
 rule gatk_genotyping:
@@ -74,9 +93,13 @@ rule gatk_genotyping:
         gvcfs=expand("variant_calling/{{reference}}/{sample}.gvcf", sample=CONFIG["samples"])
     output:
         "variant_calling/{reference}/all.vcf"
+    params:
+        custom=CONFIG.get("params_gatk", "")
+    log:
+        "variant_calling/log/{reference}/all.genotype.log"
     threads: 8
     run:
         gvcfs = _gatk_multi_arg("--variant", input.gvcfs)
         shell(
-            "gatk -T GenotypeGVCFs {gvcfs} -nt {threads} "
-            "--dbsnp {CONFIG[dbsnp]} -o {output}")
+            "gatk -T GenotypeGVCFs {gvcfs} -nt {threads} {params.custom} "
+            "--dbsnp {CONFIG[dbsnp]} -o {output} >& {log}")

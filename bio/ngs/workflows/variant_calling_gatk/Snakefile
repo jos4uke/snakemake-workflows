@@ -1,10 +1,10 @@
 """
-GATK calling following the best practices guide.
+GATK variant calling following the best practices guide.
 Needs at least GATK 3.0, available in your PATH as "gatk".
 
 Expects a json config file with the following structure, assuming that the
 desired reference sequence is some genome
-to be found under the given path, and two units A and B have been sequenced.
+to be found under the given path, and two units A and B have been sequenced with Illumina.
 
 {
     "references": {
@@ -20,7 +20,13 @@ to be found under the given path, and two units A and B have been sequenced.
         "B":
             ["path/to/B.fastq.gz"]
     },
-    "dbsnp": "path/to/dbsnp.vcf",
+    "known_variants": {
+        "dbsnp": "path/to/dbsnp.vcf",
+        "hapmap": "path/to/hapmap_3.3.vcf",
+        "g1k": "path/to/1000G_phase1.snps.high_confidence.vcf",
+        "omni": "path/to/1000G_omni2.5.vcf",
+        "mills": "path/to/Mills_and_1000G_gold_standard.indels.vcf"
+    },
     "platform": "Illumina"
 }
 
@@ -29,8 +35,11 @@ one sequencing run for each sample, or multiple lanes per sample.
 """
 
 
-__author__ "Johannes Köster"
+__author__ = "Johannes Köster"
 __license__ = "MIT"
+
+
+import json
 
 
 with open("config.json") as f:
@@ -48,4 +57,5 @@ include:
 
 
 rule all:
-    "variant_calling/genome/all.snp_recalibration.indel_recalibration.vcf"
+    input:
+        "variant_calling/genome/all.snp_recalibrated.indel_recalibrated.vcf"

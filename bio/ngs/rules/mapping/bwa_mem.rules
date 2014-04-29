@@ -22,11 +22,13 @@ the first paired and the second single end:
         "B":
             ["path/to/B.fastq.gz"]
     },
-    "platform": "Illumina"
+    "platform": "Illumina",
+    "params_bwa_mem": ""
 }
 
 Note the separation between samples and units that allows to have more than
 one sequencing run for each sample, or multiple lanes per sample.
+The "params_bwa_mem" entry is optional.
 """
 
 
@@ -37,19 +39,23 @@ __license__ = "MIT"
 UNIT_TO_SAMPLE = {unit: sample for sample, units in CONFIG["samples"].items() for unit in units}
 
 
+from snakemake.exceptions import MissingInputException
+
+
 rule bwa_mem_map:
     input:
         lambda wildcards: CONFIG["references"][wildcards.reference],
         lambda wildcards: CONFIG["units"][wildcards.unit]
     output:
-        "mapping/{reference}/units/{unit,[^\.]+}.bam"
+        "mapping/{reference}/units/{unit}.bam"
     params:
-        sample=lambda wildcards: UNIT_TO_SAMPLE[wildcards.unit]
+        sample=lambda wildcards: UNIT_TO_SAMPLE[wildcards.unit],
+        custom=CONFIG.get("params_bwa_mem", "")
     log:
         "mapping/log/{reference}/{unit}.log"
     threads: 8
     shell:
-        "bwa mem "
-        r"-R '@RG\tID:{wildcards.unit}\tSM:{params.sample}\tPL:CONFIG[platform]"
-        "-t {threads} {input} "
-        "> samtools view -Sbh - > {output} 2> {log}"
+        "bwa mem {params.custom} "
+        r"-R '@RG\tID:{wildcards.unit}\tSM:{params.sample}\tPL:CONFIG[platform]' "
+        "-t {threads} {input}  2> {log} "
+        "| samtools view -Sbh - > {output}"

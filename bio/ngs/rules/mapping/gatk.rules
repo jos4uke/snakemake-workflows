@@ -14,8 +14,11 @@ to be found under the given path:
     },
     "known_variants": {
         "dbsnp": "path/to/dbsnp.vcf"
-    }
+    },
+    "params_gatk": ""
 }
+
+The "params_gatk" entry is optional.
 """
 
 
@@ -29,14 +32,19 @@ def _get_ref(wildcards):
 
 rule gatk_realign_info:
     input:
+        "mapping/{reference}/{prefix}.bam.bai",
         ref=_get_ref,
         bam="mapping/{reference}/{prefix}.bam"
     output:
         temp("mapping/{reference,[^/]+}/{prefix}.realign.intervals")
+    params:
+        custom=CONFIG.get("params_gatk", "")
+    log:
+        "mapping/log/{reference}/{prefix}.realign_info.log"
     shell:
-        "gatk -T RealignerTargetCreator -R {input.ref} "
+        "gatk -T RealignerTargetCreator -R {input.ref} {params.custom} "
         "-I {input.bam} -known {CONFIG[known_variants][dbsnp]} "
-        "-o {output}"
+        "-o {output} >& {log}"
 
 
 rule gatk_realign_bam:
@@ -46,22 +54,31 @@ rule gatk_realign_bam:
         intervals="mapping/{reference}/{prefix}.realign.intervals"
     output:
         "mapping/{reference,[^/]+}/{prefix}.realigned.bam"
+    params:
+        custom=CONFIG.get("params_gatk", "")
+    log:
+        "mapping/log/{reference}/{prefix}.realign.log"
     shell:
-        "gatk -T IndelRealigner -R {input.ref} "
+        "gatk -T IndelRealigner -R {input.ref} {params.custom} "
         "-I {input.bam} -targetIntervals {input.intervals} "
-        "-o {output}"
+        "-o {output} >& {log}"
 
 
 rule gatk_recalibrate_info:
     input:
+        "mapping/{reference}/{prefix}.bam.bai",
         ref=_get_ref,
         bam="mapping/{reference}/{prefix}.bam"
     output:
         temp("mapping/{reference,[^/]+}/{prefix}.recalibrate.grp")
+    params:
+        custom=CONFIG.get("params_gatk", "")
+    log:
+        "mapping/log/{reference}/{prefix}.recalibrate_info.log"
     shell:
-        "gatk -T BaseRecalibrator -R {input.ref} "
+        "gatk -T BaseRecalibrator -R {input.ref} {params.custom} "
         "-I {input.bam} -knownSites {CONFIG[known_variants][dbsnp]} "
-        "-o {output}"
+        "-o {output} >& {log}"
 
 
 rule gatk_recalibrate_bam:
@@ -71,7 +88,11 @@ rule gatk_recalibrate_bam:
         grp="mapping/{reference}/{prefix}.recalibrate.grp"
     output:
         "mapping/{reference,[^/]+}/{prefix}.recalibrated.bam"
+    params:
+        custom=CONFIG.get("params_gatk", "")
+    log:
+        "mapping/log/{reference}/{prefix}.recalibrate.log"
     shell:
-        "gatk -T PrintReads -R {input.ref} "
+        "gatk -T PrintReads -R {input.ref} {params.custom} "
         "-I {input.bam} -BQSR {input.grp} "
-        "-o {output}"
+        "-o {output} >& {log}"
