@@ -41,8 +41,10 @@ rule gatk_realign_info:
         custom=CONFIG.get("params_gatk", "")
     log:
         "mapping/log/{reference}/{prefix}.realign_info.log"
+    threads: 8
     shell:
         "gatk -T RealignerTargetCreator -R {input.ref} {params.custom} "
+        "-nt {threads} "
         "-I {input.bam} -known {CONFIG[known_variants][dbsnp]} "
         "-o {output} >& {log}"
 
@@ -75,8 +77,10 @@ rule gatk_recalibrate_info:
         custom=CONFIG.get("params_gatk", "")
     log:
         "mapping/log/{reference}/{prefix}.recalibrate_info.log"
+    threads: 8
     shell:
         "gatk -T BaseRecalibrator -R {input.ref} {params.custom} "
+        "-nct {threads} "
         "-I {input.bam} -knownSites {CONFIG[known_variants][dbsnp]} "
         "-o {output} >& {log}"
 
@@ -92,7 +96,9 @@ rule gatk_recalibrate_bam:
         custom=CONFIG.get("params_gatk", "")
     log:
         "mapping/log/{reference}/{prefix}.recalibrate.log"
+    threads: 8
     shell:
         "gatk -T PrintReads -R {input.ref} {params.custom} "
+        "-nct {threads} "
         "-I {input.bam} -BQSR {input.grp} "
         "-o {output} >& {log}"

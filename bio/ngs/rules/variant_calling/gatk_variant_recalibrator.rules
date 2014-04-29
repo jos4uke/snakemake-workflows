@@ -58,10 +58,11 @@ rule gatk_variant_recalibration:
         CONFIG.get("params_gatk", "")
     log:
         "variant_calling/log/{reference}/{prefix}.{type}_recalibrate_info.log"
+    threads: 8
     shell:
         "gatk -T VariantRecalibrator -R {input.ref} "
         "-input {input.vcf} "
-        "{params} "
+        "{params} -nt {threads} "
         "-tranche 100.0 -tranche 99.9 -tranche 99.0 -tranche 90.0 "
         "-recalFile {output.recal} "
         "-tranchesFile {output.tranches} "
@@ -81,8 +82,9 @@ rule gatk_apply_variant_recalibration:
         custom=CONFIG.get("params_gatk", "")
     log:
         "variant_calling/log/{reference}/{prefix}.{type}_recalibrate.log"
+    threads: 8
     shell:
-        "gatk -T ApplyRecalibration -R {input.ref} "
+        "gatk -T ApplyRecalibration -R {input.ref} -nt {threads} "
         "-input {input.vcf} -mode {params.mode} {params.custom} "
         "--ts_filter_level 99.9 "
         "-o {output} >& {log}"
