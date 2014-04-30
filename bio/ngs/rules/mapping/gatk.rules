@@ -100,5 +100,6 @@ rule gatk_recalibrate_bam:
     shell:
         "gatk -T PrintReads -R {input.ref} {params.custom} "
         "-nct {threads} "
+        "--disable_bam_indexing "
         "-I {input.bam} -BQSR {input.grp} "
         "-o {output} >& {log}"

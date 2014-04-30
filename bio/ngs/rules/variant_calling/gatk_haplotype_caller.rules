@@ -63,6 +63,7 @@ def _get_bais(wildcards):
 
 
 def _gatk_multi_arg(flag, files):
+    flag += " "
     return flag + flag.join(files)
 
 
@@ -79,11 +80,11 @@ rule gatk_haplotype_caller:
         "variant_calling/log/{reference}/{sample}.genotype_info.log"
     threads: 8
     run:
-        bams = gatk_multi_arg("-I", input.bams)
+        bams = _gatk_multi_arg("-I", input.bams)
         shell(
             "gatk -T HaplotypeCaller -R {input.ref} {bams} {params.custom} "
             "--emitRefConfidence GVCF --variant_index_type LINEAR "
-            "--dbsnp {CONFIG[dbsnp]} -nct {threads} "
+            "--dbsnp {CONFIG[known_variants][dbsnp]} -nct {threads} "
             "--variant_index_parameter 128000 -o {output} >& {log}")
 
 
@@ -102,4 +103,4 @@ rule gatk_genotyping:
         gvcfs = _gatk_multi_arg("--variant", input.gvcfs)
         shell(
             "gatk -T GenotypeGVCFs {gvcfs} -nt {threads} {params.custom} "
-            "--dbsnp {CONFIG[dbsnp]} -o {output} >& {log}")
+            "--dbsnp {CONFIG[known_variants][dbsnp]} -o {output} >& {log}")
