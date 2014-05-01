@@ -1,3 +1,6 @@
+# vim: syntax=python expandtab
+
+
 """
 Read mapping with BWA MEM (http://bio-bwa.sourceforge.net).
 

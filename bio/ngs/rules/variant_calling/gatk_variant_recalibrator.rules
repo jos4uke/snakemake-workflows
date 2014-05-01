@@ -1,3 +1,6 @@
+# vim: syntax=python expandtab
+
+
 """
 GATK variant recalibration as described in
 
@@ -22,6 +25,10 @@ to be found under the given path.
     }
 }
 """
+
+
+__author__ = "Johannes Köster"
+__license__ = "MIT"
 
 
 def _get_ref(wildcards):

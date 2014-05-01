@@ -1,5 +1,6 @@
 # vim: syntax=python expandtab
 
+
 """
 GATK haplotype calling using the workflow suggested in 
 https://www.broadinstitute.org/gatk/guide/topic?name=methods#methods3893
