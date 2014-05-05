@@ -11,6 +11,7 @@ For usage, include this in your workflow.
 Expects a global variable CONFIG (e.g. parsed from json) of at least the
 following structure, assuming that the desired reference sequence is some genome
 to be found under the given path, and two units A and B have been sequenced.
+The heterozygosity parameters show the default values for homo sapiens.
 
 {
     "references": {
@@ -28,7 +29,9 @@ to be found under the given path, and two units A and B have been sequenced.
     },
     "known_variants": {
         "dbsnp": "path/to/dbsnp.vcf"
-    }
+    },
+    "heterozygosity": 0.001,
+    "indel_heterozygosity": 1.25E-4
 }
 
 Note the separation between samples and units that allows to have more than
@@ -85,6 +88,8 @@ rule gatk_haplotype_caller:
         shell(
             "gatk -T HaplotypeCaller -R {input.ref} {bams} {params.custom} "
             "--emitRefConfidence GVCF --variant_index_type LINEAR "
+            "--heterozygosity {CONFIG[heterozygosity]} "
+            "--indel_heterozygosity {CONFIG[indel_heterozygosity]} "
             "--dbsnp {CONFIG[known_variants][dbsnp]} -nct {threads} "
             "--variant_index_parameter 128000 -o {output} >& {log}")
 
