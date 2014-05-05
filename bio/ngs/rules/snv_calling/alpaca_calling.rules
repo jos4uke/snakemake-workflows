@@ -1,0 +1,102 @@
+# vim: syntax=python expandtab
+
+
+"""
+ALPACA SNV calling.
+
+For usage, include this in your workflow.
+
+Expects a global variable CONFIG (e.g. parsed from json) of at least the
+following structure, assuming that the desired reference sequence is some genome
+to be found under the given path, and two units A and B have been sequenced.
+The heterozygosity parameter shows the default values for homo sapiens.
+
+{
+    "references": {
+        "genome": "path/to/genome.fasta"
+    },
+    "samples": {
+        "A": ["A"],
+        "B": ["B"]
+    },
+    "units": {
+        "A":
+            ["path/to/A_R1.fastq.gz", "path/to/A_R2.fastq.gz"],
+        "B":
+            ["path/to/B.fastq.gz"]
+    },
+    "known_variants": {
+        "dbsnp": "path/to/dbsnp.vcf"
+    },
+    "ploidy": 2,
+    "heterozygosity": 0.001,
+    "alpaca_queries": {
+        "somatic": "A - B"
+    }
+}
+
+Note the separation between samples and units that allows to have more than
+one sequencing run for each sample, or multiple lanes per sample.
+"""
+
+
+ALPACA_INDEX = "snv_calling/{reference}/index.hdf5"
+
+
+def _expand_mapping(pattern, wildcards):
+    return expand(
+        pattern,
+        reference=wildcards.reference,
+        unit=CONFIG["samples"][wildcards.sample])
+
+
+def _get_bams(wildcards):
+    return _expand_mapping(
+        "mapping/{reference}/units/{unit}.sorted.realigned.recalibrated.bam",
+        wildcards)
+
+
+def _get_bais(wildcards):
+    return _expand_mapping(
+        "mapping/{reference}/units/{unit}.sorted.realigned.recalibrated.bam.bai",
+        wildcards)
+
+
+rule alpaca_init:
+    input:
+        CONFIG["reference"]
+    output:
+        touch("snv_calling/{reference}/done/init.done"),
+        index=ALPACA_INDEX
+    shell:
+        "alpaca init --ploidy {CONFIG[ploidy]} {input} {output.index}"
+
+
+rule alpaca_index:
+    input:
+        "snv_calling/done/init.done",
+        _get_bais,
+        bams=_get_bams,
+    output:
+        touch("snv_calling/{reference}/done/{sample}.indexed.done")
+    params:
+        index=ALPACA_INDEX
+    threads: 8
+    shell:
+        "alpaca index --threads {threads} --sample-name {wildcards.sample} "
+        "{params.index} {input.bams}"
+
+
+rule alpaca_call:
+    input:
+        expand("snv_calling/{reference}/done/{sample}.indexed.done", sample=CONFIG["samples"])
+    output:
+        "snv_calling/{reference}/{query}.{min_qual}.{max_strandbias}.vcf"
+    params:
+        query=lambda wildcards: CONFIG["alpaca_queries"][wildcards.query],
+        index=ALPACA_INDEX
+    shell:
+        "alpaca call --min-qual {qual} "
+        "--max-strand-bias {strandbias} "
+        "--heterozygosity {CONFIG[heterozygosity]} "
+        "{params.index} {params.query} > {output}"
