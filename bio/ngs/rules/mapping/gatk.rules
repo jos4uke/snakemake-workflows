@@ -65,6 +65,7 @@ rule gatk_realign_bam:
         "mapping/log/{reference}/{prefix}.realign.log"
     shell:
         "gatk -T IndelRealigner -R {input.ref} {params.custom} "
+        "--disable_bam_indexing "
         "-I {input.bam} -targetIntervals {input.intervals} "
         "-o {output} >& {log}"
 
