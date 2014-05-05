@@ -52,13 +52,13 @@ def _expand_mapping(pattern, wildcards):
 
 def _get_bams(wildcards):
     return _expand_mapping(
-        "mapping/{reference}/units/{unit}.sorted.realigned.recalibrated.bam",
+        "mapping/{reference}/units/{unit}.sorted.bam",
         wildcards)
 
 
 def _get_bais(wildcards):
     return _expand_mapping(
-        "mapping/{reference}/units/{unit}.sorted.realigned.recalibrated.bam.bai",
+        "mapping/{reference}/units/{unit}.sorted.bam.bai",
         wildcards)
 
 
