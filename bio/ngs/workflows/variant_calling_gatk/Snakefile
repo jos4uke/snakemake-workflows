@@ -27,7 +27,9 @@ to be found under the given path, and two units A and B have been sequenced with
         "omni": "path/to/1000G_omni2.5.vcf",
         "mills": "path/to/Mills_and_1000G_gold_standard.indels.vcf"
     },
-    "platform": "Illumina"
+    "platform": "Illumina",
+    "heterozygosity": 0.001,
+    "indel_heterozygosity": 1.25E-4
 }
 
 Note the separation between samples and units that allows to have more than
