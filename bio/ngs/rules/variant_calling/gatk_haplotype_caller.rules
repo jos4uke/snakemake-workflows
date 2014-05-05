@@ -13,6 +13,7 @@ following structure, assuming that the desired reference sequence is some genome
 to be found under the given path, and two units A and B have been sequenced.
 The heterozygosity parameters show the default values for homo sapiens.
 
+
 {
     "references": {
         "genome": "path/to/genome.fasta"
