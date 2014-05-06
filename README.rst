@@ -2,6 +2,7 @@ The Snakemake Workflow Repository
 =================================
 
 The Snakemake Workflow Repository is a collection of reusable and modularized Snakemake_ rules and workflows.
+The provided code should also serve as a best-practices of how to build production ready workflows with Snakemake.
 
 Structure
 ---------
