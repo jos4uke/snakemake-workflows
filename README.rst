@@ -19,7 +19,18 @@ Contribute
 ----------
 
 We invite anybody to contribute to the Snakemake Workflow Repository.
-If you want to contribute we suggest forking the repository and doing a pull request once your ontribution is ready for release.
-It will be reviewed and included as fast as possible.
+If you want to contribute we suggest the following procedure:
+
+* fork the repository
+* develop your contribution
+* perform a pull request
+
+The pull request will be reviewed and included as fast as possible.
+Thereby, contributions should follow the coding style of the already present examples, i.e.
+
+* start with a docstring describing the usage and purpose
+* be customizable via a json config file parsed into a variable `CONFIG`
+* use 4 spaces for indentation
+* specify reasonable default values for threads and resources
 
 .. _include: https://bitbucket.org/johanneskoester/snakemake/wiki/Documentation#markdown-header-includes
