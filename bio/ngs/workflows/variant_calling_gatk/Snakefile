@@ -1,3 +1,7 @@
+# vim: syntax=python tabstop=4 expandtab
+# coding: utf-8
+
+
 """
 GATK variant calling following the best practices guide.
 Needs at least GATK 3.0, available in your PATH as "gatk".
@@ -37,7 +41,7 @@ one sequencing run for each sample, or multiple lanes per sample.
 """
 
 
-__author__ = "Johannes Köster"
+__author__ = "Johannes Köster (http://johanneskoester.bitbucket.org)"
 __license__ = "MIT"
 
 
