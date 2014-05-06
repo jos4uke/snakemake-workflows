@@ -93,5 +93,5 @@ rule gatk_apply_variant_recalibration:
     shell:
         "gatk -T ApplyRecalibration -R {input.ref} -nt {threads} "
         "-input {input.vcf} -mode {params.mode} {params.custom} "
-        "--ts_filter_level 99.9 "
-        "-o {output} >& {log}"
+        "-recalFile {input.recal} --ts_filter_level 99.9 "
+        "-tranchesFile {input.tranches} -o {output} >& {log}"
