@@ -11,7 +11,7 @@ Rules can be found under::
 <discipline>/<subject>/rules/<analysis_step>/<name>.rules
 
 The general strategy is to include these into your workflow via the include_ command.
-This can also happen via https urls (in this case make sure that you trust the source).
+This can also happen via https urls (in this case make sure, that you trust the source).
 Example workflows following this strategy can be found under:: 
 
 <discipline>/<subject>/workflows/<name>/Snakefile
