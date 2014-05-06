@@ -1,4 +1,5 @@
 # vim: syntax=python expandtab
+# coding: utf-8
 
 
 """
@@ -35,7 +36,7 @@ The "params_peanut" entry is optional.
 """
 
 
-__author__ = "Johannes Köster"
+__author__ = "Johannes Köster (http://johanneskoester.bitbucket.org)"
 __license__ = "MIT"
 
 
