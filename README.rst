@@ -1,7 +1,7 @@
 The Snakemake Workflow Repository
 =================================
 
-The Snakemake Workflow Repository is a collection of reusable and modularized Snakemake rules and workflows.
+The Snakemake Workflow Repository is a collection of reusable and modularized Snakemake_ rules and workflows.
 
 Structure
 ---------
@@ -35,6 +35,6 @@ Thereby, contributions should follow the coding style of the already present exa
 * use 4 spaces for indentation,
 * specify reasonable default values for threads and resources.
 
+.. _Snakemake: https://bitbucket.org/johanneskoester/snakemake
 .. _include: https://bitbucket.org/johanneskoester/snakemake/wiki/Documentation#markdown-header-includes
-
 .. _guide: http://legacy.python.org/dev/peps/pep-0008
