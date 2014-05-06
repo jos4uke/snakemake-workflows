@@ -29,8 +29,12 @@ The pull request will be reviewed and included as fast as possible.
 Thereby, contributions should follow the coding style of the already present examples, i.e.
 
 * start with a docstring describing the usage and purpose
+* define author with email address and a license
+* follow the python style guide_
 * be customizable via a json config file parsed into a variable CONFIG
 * use 4 spaces for indentation
 * specify reasonable default values for threads and resources
 
 .. _include: https://bitbucket.org/johanneskoester/snakemake/wiki/Documentation#markdown-header-includes
+
+.. _guide: http://legacy.python.org/dev/peps/pep-0008
