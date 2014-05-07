@@ -40,7 +40,9 @@ __author__ = "Johannes Köster (http://johanneskoester.bitbucket.org)"
 __license__ = "MIT"
 
 
-UNIT_TO_SAMPLE = {unit: sample for sample, units in CONFIG["samples"].items() for unit in units}
+UNIT_TO_SAMPLE = {
+    unit: sample for sample, units in CONFIG["samples"].items()
+    for unit in units}
 
 
 rule peanut_map:
@@ -58,5 +60,7 @@ rule peanut_map:
     resources: gpu=1
     shell:
         "peanut map {params.custom} "
-        "--read-group ID:{wildcards.unit} SM:{params.sample} PL:{CONFIG[platform]} "
-        "--threads {threads} {input} 2> {log} | samtools view -Sbh - > {output}"
+        "--read-group ID:{wildcards.unit} "
+        "SM:{params.sample} PL:{CONFIG[platform]} "
+        "--threads {threads} {input} 2> {log} "
+        "| samtools view -Sbh - > {output}"

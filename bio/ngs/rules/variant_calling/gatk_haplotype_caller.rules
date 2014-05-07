@@ -100,7 +100,9 @@ rule gatk_haplotype_caller:
 rule gatk_genotyping:
     input:
         ref=_get_ref,
-        gvcfs=expand("variant_calling/{{reference}}/{sample}.gvcf", sample=CONFIG["samples"])
+        gvcfs=expand(
+            "variant_calling/{{reference}}/{sample}.gvcf",
+            sample=CONFIG["samples"])
     output:
         "variant_calling/{reference}/all.vcf"
     params:
