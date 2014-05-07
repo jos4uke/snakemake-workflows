@@ -39,7 +39,9 @@ __author__ = "Johannes Köster (http://johanneskoester.bitbucket.org)"
 __license__ = "MIT"
 
 
-UNIT_TO_SAMPLE = {unit: sample for sample, units in CONFIG["samples"].items() for unit in units}
+UNIT_TO_SAMPLE = {
+    unit: sample for sample, units in CONFIG["samples"].items()
+    for unit in units}
 
 
 from snakemake.exceptions import MissingInputException
@@ -59,6 +61,7 @@ rule bwa_mem_map:
     threads: 8
     shell:
         "bwa mem {params.custom} "
-        r"-R '@RG\tID:{wildcards.unit}\tSM:{params.sample}\tPL:{CONFIG[platform]}' "
+        r"-R '@RG\tID:{wildcards.unit}\t"
+        "SM:{params.sample}\tPL:{CONFIG[platform]}' "
         "-t {threads} {input}  2> {log} "
         "| samtools view -Sbh - > {output}"
