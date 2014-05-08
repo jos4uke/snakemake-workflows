@@ -49,23 +49,12 @@ def _get_ref(wildcards):
     return CONFIG["references"][wildcards.reference]
 
 
-def _expand_mapping(pattern, wildcards):
-    return expand(
-        pattern,
-        reference=wildcards.reference,
-        unit=CONFIG["samples"][wildcards.sample])
-
-
-def _get_bams(wildcards):
-    return _expand_mapping(
-        "mapping/{reference}/units/{unit}.sorted.realigned.recalibrated.bam",
-        wildcards)
-
-
-def _get_bais(wildcards):
-    return _expand_mapping(
-        "mapping/{reference}/units/{unit}.sorted.realigned.recalibrated.bam.bai",
-        wildcards)
+def _sample_units(pattern):
+    def apply(wildcards):
+        return expand(
+            pattern, reference=wildcards.reference,
+            unit=CONFIG["samples"][wildcards.sample])
+    return apply
 
 
 def _gatk_multi_arg(flag, files):
@@ -75,9 +64,9 @@ def _gatk_multi_arg(flag, files):
 
 rule gatk_haplotype_caller:
     input:
-        _get_bais,
+        _sample_to_units("mapping/{reference}/units/{unit}.sorted.realigned.recalibrated.bam.bai"),
         ref=_get_ref,
-        bams=_get_bams
+        bams=_sample_to_units("mapping/{reference}/units/{unit}.sorted.realigned.recalibrated.bam")
     output:
         gvcf="variant_calling/{reference}/{sample}.gvcf",
         idx="variant_calling/{reference}/{sample}.gvcf.idx"
