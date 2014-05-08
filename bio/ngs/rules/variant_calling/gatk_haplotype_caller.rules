@@ -49,7 +49,7 @@ def _get_ref(wildcards):
     return CONFIG["references"][wildcards.reference]
 
 
-def _sample_units(pattern):
+def _sample_to_units(pattern):
     def apply(wildcards):
         return expand(
             pattern, reference=wildcards.reference,
