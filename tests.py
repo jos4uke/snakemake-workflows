@@ -18,17 +18,16 @@ class TestSnakefiles(Plugin):
         head, tail = os.path.split(path) 
         if tail == "Snakefile":
             if os.path.exists(os.path.join(head, "test")):
-                print(path, file=sys.stderr)
                 return True
         return False
 
     def loadTestsFromFile(self, snakefile):
         testdir = os.path.join(os.path.dirname(snakefile), "test")
             
-        yield TestWorkflow(snakefile, testdir)
+        yield WorkflowTest(snakefile, testdir)
 
 
-class TestWorkflow(TestCase):
+class WorkflowTest(TestCase):
     def __init__(self, snakefile, testdir):
         self.snakefile = snakefile
         self.testdir = testdir
@@ -44,5 +43,4 @@ class TestWorkflow(TestCase):
 
 
 if __name__ == "__main__":
-    print("test")
     nose.main(addplugins=[TestSnakefiles()])
