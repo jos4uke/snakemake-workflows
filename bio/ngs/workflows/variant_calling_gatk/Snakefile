@@ -59,7 +59,7 @@ include:
 include:
     "https://bitbucket.org/johanneskoester/snakemake-workflows/raw/master/bio/ngs/rules/variant_calling/gatk_haplotype_caller.rules"
 include:
-    "https://bitbucket.org/johanneskoester/snakemake-workflows/raw/master/bio/ngs/rules/variant_calling/gatk_variant_recalibration.rules"
+    "https://bitbucket.org/johanneskoester/snakemake-workflows/raw/master/bio/ngs/rules/variant_calling/gatk_variant_recalibrator.rules"
 
 
 rule all:
