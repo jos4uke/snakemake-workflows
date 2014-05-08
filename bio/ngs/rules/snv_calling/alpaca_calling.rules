@@ -76,23 +76,36 @@ rule alpaca_index:
     params:
         index=ALPACA_INDEX
     threads: 8
+    resources: gpu=1
     shell:
-        "alpaca index --threads {threads} --sample-name {wildcards.sample} "
-        "{params.index} {input.bams}"
+        "alpaca --dev gpu --threads {threads} index "
+        "--sample-name {wildcards.sample} {params.index} {input.bams}"
 
 
-rule alpaca_call:
+rule alpaca_optimize:
     input:
         expand(
             "snv_calling/{reference}/done/{sample}.indexed.done",
             sample=CONFIG["samples"])
     output:
+        "snv_calling/{reference}/index.optimized.hdf5"
+    params:
+        index=ALPACA_INDEX
+    shell:
+        "alpaca optimize {params.index} {output}"
+
+
+rule alpaca_call:
+    input:
+        "snv_calling/{reference}/index.optimized.hdf5"
+    output:
         "snv_calling/{reference}/{query}.{min_qual}.{max_strandbias}.vcf"
     params:
         query=lambda wildcards: CONFIG["alpaca_queries"][wildcards.query],
         index=ALPACA_INDEX
+    resources: gpu=1
     shell:
-        "alpaca call --min-qual {qual} "
+        "alpaca --dev gpu call --min-qual {qual} "
         "--max-strand-bias {strandbias} "
         "--heterozygosity {CONFIG[heterozygosity]} "
         "{params.index} {params.query} > {output}"
