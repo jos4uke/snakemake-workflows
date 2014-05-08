@@ -45,26 +45,15 @@ __author__ = "Johannes Köster (http://johanneskoester.bitbucket.org)"
 __license__ = "MIT"
 
 
+def _all_units(pattern):
+    def apply(wildcards):
+        return expand(
+            pattern, reference=wildcards.reference,
+            unit=CONFIG["samples"][wildcards.sample])
+    return apply
+
+
 ALPACA_INDEX = "snv_calling/{reference}/index.hdf5"
-
-
-def _expand_mapping(pattern, wildcards):
-    return expand(
-        pattern,
-        reference=wildcards.reference,
-        unit=CONFIG["samples"][wildcards.sample])
-
-
-def _get_bams(wildcards):
-    return _expand_mapping(
-        "mapping/{reference}/units/{unit}.sorted.bam",
-        wildcards)
-
-
-def _get_bais(wildcards):
-    return _expand_mapping(
-        "mapping/{reference}/units/{unit}.sorted.bam.bai",
-        wildcards)
 
 
 rule alpaca_init:
@@ -80,8 +69,8 @@ rule alpaca_init:
 rule alpaca_index:
     input:
         "snv_calling/done/init.done",
-        _get_bais,
-        bams=_get_bams,
+        _all_units("mapping/{reference}/units/{unit}.sorted.bam.bai"),
+        bams=_all_units("mapping/{reference}/units/{unit}.sorted.bam")
     output:
         touch("snv_calling/{reference}/done/{sample}.indexed.done")
     params:
