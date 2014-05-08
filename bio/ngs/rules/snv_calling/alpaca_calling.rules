@@ -58,7 +58,7 @@ ALPACA_INDEX = "snv_calling/{reference}/index.hdf5"
 
 rule alpaca_init:
     input:
-        CONFIG["reference"]
+        lambda wildcards: CONFIG["references"][wildcards.reference]
     output:
         touch("snv_calling/{reference}/done/init.done"),
         index=ALPACA_INDEX
