@@ -45,7 +45,7 @@ __author__ = "Johannes Köster (http://johanneskoester.bitbucket.org)"
 __license__ = "MIT"
 
 
-def _all_units(pattern):
+def _sample_units(pattern):
     def apply(wildcards):
         return expand(
             pattern, reference=wildcards.reference,
@@ -69,8 +69,8 @@ rule alpaca_init:
 rule alpaca_index:
     input:
         "snv_calling/done/init.done",
-        _all_units("mapping/{reference}/units/{unit}.sorted.bam.bai"),
-        bams=_all_units("mapping/{reference}/units/{unit}.sorted.bam")
+        _sample_units("mapping/{reference}/units/{unit}.sorted.bam.bai"),
+        bams=_sample_units("mapping/{reference}/units/{unit}.sorted.bam")
     output:
         touch("snv_calling/{reference}/done/{sample}.indexed.done")
     params:
