@@ -1,9 +1,23 @@
+#!/usr/bin/env python3
+# vim: syntax=python tabstop=4 expandtab
+# coding: utf-8
+
+
+"""
+Executes test cases for all workflows that contain a "test" directory.
+"""
+
+
+__author__ = "Johannes Köster (http://johanneskoester.bitbucket.org)"
+__license__ = "MIT"
+
 
 import nose
 import sys, os
 from nose.plugins import Plugin
 from unittest import TestCase
 from snakemake import snakemake
+
 
 class TestSnakefiles(Plugin):
     enabled=True
