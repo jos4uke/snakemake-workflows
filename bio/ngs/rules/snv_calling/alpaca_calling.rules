@@ -62,8 +62,10 @@ rule alpaca_init:
     output:
         touch("snv_calling/{reference}/done/init.done"),
         index=ALPACA_INDEX
+    resources: gpu=1
     shell:
-        "alpaca init --ploidy {CONFIG[ploidy]} {input} {output.index}"
+        "alpaca --dev gpu init "
+        "--ploidy {CONFIG[ploidy]} {input} {output.index}"
 
 
 rule alpaca_index:
