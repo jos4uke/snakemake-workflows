@@ -6,6 +6,10 @@
 Variant calling with Freebayes:
 https://github.com/ekg/freebayes
 
+Needs the following tools available in PATH:
+freebayes
+vcf-concat from vcftools
+
 For usage, include this in your workflow.
 
 Expects a global variable CONFIG (e.g. parsed from json) of at least the
@@ -45,6 +49,19 @@ def _get_ref(wildcards):
     return CONFIG["references"][wildcards.reference]
 
 
+def _get_chroms(pattern):
+    def apply(wildcards):
+        ref = _get_ref(wildcards)
+        return expand(
+            pattern,
+            reference=wildcards.reference,
+            chrom=[
+                record.split(None, 1)[0][1:].decode()
+                for record in shell("grep '>' {ref}", iterable=True)
+            ]
+    return apply
+
+
 def _get_units(pattern):
     def apply(wildcards):
         return expand(
@@ -62,15 +79,23 @@ rule freebayes:
         ref=_get_ref,
         bams=_get_units("mapping/{reference}/units/{unit}.sorted.bam")
     output:
-        "variant_calling/{reference}/all.vcf"
+        "variant_calling/{reference}/all.{chrom}.vcf"
     params:
         custom=CONFIG.get("params_freebayes", "")
     log:
-        "variant_calling/log/{reference}/all.genotype.log"
+        "variant_calling/log/{reference}/all.{chrom}.genotype.log"
     threads: 8
     shell:
-        "freebayes-parallel "
-        "<(fasta_generate_regions.py {input.ref} 100000) {threads} "
+        "freebayes -r {wildcards.chrom} "
         "--ploidy {CONFIG[ploidy]} --fasta-reference {input.ref} "
         "--theta {CONFIG[heterozygosity]} {params.custom} "
         "{input.bams} > {output}"
+
+
+rule freebayes_merge:
+    input:
+        _get_chroms("variant_calling/{reference}/all.{chrom}.vcf")
+    output:
+        "variant_calling/{reference}/all.vcf"
+    shell:
+        "vcf-concat {input} > {output}"
