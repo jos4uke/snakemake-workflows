@@ -72,5 +72,5 @@ rule freebayes:
         "freebayes-parallel "
         "<(fasta_generate_regions.py {input.ref} 100000) {threads} "
         "--ploidy {CONFIG[ploidy]} --fasta-reference {input.ref} "
-        "--theta {CONFIG[heterozygosity]} {params.custom} -r {wildcards.chrom} "
+        "--theta {CONFIG[heterozygosity]} {params.custom} "
         "{input.bams} > {output}"
