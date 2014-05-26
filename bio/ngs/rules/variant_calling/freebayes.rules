@@ -87,7 +87,6 @@ rule freebayes:
         custom=CONFIG.get("params_freebayes", "")
     log:
         "variant_calling/log/{reference}/all.{chrom}.genotype.log"
-    threads: 8
     shell:
         "freebayes -r {wildcards.chrom} "
         "--ploidy {CONFIG[ploidy]} --fasta-reference {input.ref} "
