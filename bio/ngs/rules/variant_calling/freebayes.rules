@@ -16,6 +16,7 @@ Expects a global variable CONFIG (e.g. parsed from json) of at least the
 following structure, assuming that the desired reference sequence is some genome
 to be found under the given path, and two units A and B have been sequenced.
 The heterozygosity parameters show the default values for homo sapiens.
+The reference FASTA file needs to be indexed with samtools faidx.
 
 
 {
@@ -45,6 +46,9 @@ __author__ = "Johannes Köster (http://johanneskoester.bitbucket.org)"
 __license__ = "MIT"
 
 
+import csv
+
+
 def _get_ref(wildcards):
     return CONFIG["references"][wildcards.reference]
 
@@ -52,13 +56,12 @@ def _get_ref(wildcards):
 def _get_chroms(pattern):
     def apply(wildcards):
         ref = _get_ref(wildcards)
+        with open(ref + ".fai") as f:
+            chroms = [l[0] for l in csv.reader(f, delimiter="\t")]
         return expand(
             pattern,
             reference=wildcards.reference,
-            chrom=[
-                record.split(None, 1)[0][1:].decode()
-                for record in shell("grep '>' {ref}", iterable=True)
-            ])
+            chrom=chroms)
     return apply
 
 
