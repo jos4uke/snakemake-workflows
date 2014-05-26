@@ -29,7 +29,7 @@ class TestSnakefiles(Plugin):
         return True
 
     def wantFile(self, path):
-        head, tail = os.path.split(path) 
+        head, tail = os.path.split(path)
         if tail == "Snakefile":
             if os.path.exists(os.path.join(head, "test")):
                 return True

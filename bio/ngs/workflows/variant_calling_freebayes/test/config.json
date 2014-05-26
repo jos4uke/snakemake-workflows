@@ -12,5 +12,5 @@
     },
     "platform": "Illumina",
     "ploidy": 2,
-    "heterozygosity": 0.001,
+    "heterozygosity": 0.001
 }
