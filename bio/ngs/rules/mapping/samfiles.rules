@@ -49,6 +49,15 @@ rule bam_stats:
         "samtools idxstats {input} > {output}"
 
 
+rule fasta_index:
+    input:
+        "{prefix}.{suffix}"
+    output:
+        "{prefix}.{suffix,(fasta|fa)}.fai"
+    shell:
+        "samtools faidx {input}"
+
+
 rule sample_merge:
     """
     Merge bam files for multiple units into one for the given sample.
