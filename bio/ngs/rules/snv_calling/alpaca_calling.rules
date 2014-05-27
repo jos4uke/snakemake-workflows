@@ -97,6 +97,17 @@ rule alpaca_optimize:
         "alpaca optimize {params.index} {output}"
 
 
+rule alpaca_optimize:
+    input:
+        "snv_calling/{reference}/index.optimized.hdf5"
+    output:
+        "snv_calling/{reference}/index.optimized.hdf5"
+    params:
+        index=ALPACA_INDEX
+    shell:
+        "alpaca optimize {params.index} {output}"
+
+
 rule alpaca_call:
     input:
         "snv_calling/{reference}/index.optimized.hdf5"
@@ -110,4 +121,4 @@ rule alpaca_call:
         "alpaca --dev gpu call --min-qual {qual} "
         "--max-strand-bias {strandbias} "
         "--heterozygosity {CONFIG[heterozygosity]} "
-        "{params.index} {params.query} > {output}"
+        "{input} {params.query} > {output}"
