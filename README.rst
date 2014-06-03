@@ -22,7 +22,9 @@ Content
 Next Generation Sequencing
 ..........................
 
-So far, this repository contains rules for the read mappers BWA and PEANUT, general samtools rules for manipulating SAM/BAM files, rules for the variant callers GATK and Freebayes and two example variant calling workflows.
+So far, this repository contains rules for the read mappers BWA and PEANUT, general samtools
+rules for manipulating SAM/BAM files, rules for the variant callers GATK and Freebayes and two
+example variant calling workflows (based on GATK and Freebayes).
 
 Contribute
 ----------
