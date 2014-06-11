@@ -53,61 +53,41 @@ def _sample_units(pattern):
     return apply
 
 
-ALPACA_INDEX = "snv_calling/{reference}/index.hdf5"
-
-
-rule alpaca_init:
-    input:
-        lambda wildcards: CONFIG["references"][wildcards.reference]
-    output:
-        touch("snv_calling/{reference}/done/init.done"),
-        index=ALPACA_INDEX
-    resources: gpu=1
-    shell:
-        "alpaca --dev gpu init "
-        "--ploidy {CONFIG[ploidy]} {input} {output.index}"
-
-
 rule alpaca_index:
     input:
         "snv_calling/done/init.done",
         _sample_units("mapping/{reference}/units/{unit}.sorted.bam.bai"),
         bams=_sample_units("mapping/{reference}/units/{unit}.sorted.bam")
     output:
-        touch("snv_calling/{reference}/done/{sample}.indexed.done")
-    params:
-        index=ALPACA_INDEX
+        "snv_calling/{reference}/{sample}.index.hdf5"
     threads: 8
     resources: gpu=1
     shell:
         "alpaca --dev gpu --threads {threads} index "
-        "--sample-name {wildcards.sample} {params.index} {input.bams}"
+        "--sample-name {wildcards.sample} {input.bams} {output}"
 
 
-rule alpaca_optimize:
+rule alpaca_combine:
     input:
         expand(
-            "snv_calling/{reference}/done/{sample}.indexed.done",
+            "snv_calling/{reference}/{sample}.index.hdf5",
             sample=CONFIG["samples"])
     output:
-        "snv_calling/{reference}/index.optimized.hdf5"
-    params:
-        index=ALPACA_INDEX
+        "snv_calling/{reference}/index.hdf5"
     shell:
-        "alpaca optimize {params.index} {output}"
+        "alpaca combine {input} {output}"
 
 
 rule alpaca_call:
     input:
-        "snv_calling/{reference}/index.optimized.hdf5"
+        "snv_calling/{reference}/index.hdf5"
     output:
         "snv_calling/{reference}/{query}.{min_qual}.{max_strandbias}.vcf"
     params:
-        query=lambda wildcards: CONFIG["alpaca_queries"][wildcards.query],
-        index=ALPACA_INDEX
+        query=lambda wildcards: CONFIG["alpaca_queries"][wildcards.query]
     resources: gpu=1
     shell:
         "alpaca --dev gpu call --min-qual {qual} "
         "--max-strand-bias {strandbias} "
         "--heterozygosity {CONFIG[heterozygosity]} "
-        "{params.index} {params.query} > {output}"
+        "{input} {params.query} > {output}"
