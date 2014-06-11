@@ -61,4 +61,4 @@ include:
 
 rule all:
     input:
-        expand("snv_calling/genome/{alpaca_queries}.vcf", **CONFIG)
+        expand("snv_calling/genome/{alpaca_queries}.vcf", alpaca_queries=CONFIG["alpaca_queries"])

@@ -73,7 +73,7 @@ rule alpaca_index:
 rule alpaca_combine:
     input:
         expand(
-            "snv_calling/{reference}/{sample}.index.hdf5",
+            "snv_calling/{{reference}}/{sample}.index.hdf5",
             sample=CONFIG["samples"])
     output:
         "snv_calling/{reference}/index.hdf5"
@@ -98,4 +98,4 @@ rule alpaca_call:
         "alpaca --dev gpu call --fdr {CONFIG[fdr]} "
         "--max-strand-bias {CONFIG[max_strandbias]} "
         "--heterozygosity {CONFIG[heterozygosity]} "
-        "{input} {params.query} > {output} 2> {log}"
+        "{input} '{params.query}' > {output} 2> {log}"
