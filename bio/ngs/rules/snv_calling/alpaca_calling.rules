@@ -66,7 +66,7 @@ rule alpaca_index:
     threads: 8
     resources: gpu=1
     shell:
-        "alpaca --dev gpu --threads {threads} index "
+        "alpaca --dev gpu --threads {threads} index --ploidy {CONFIG[ploidy]} "
         "--sample-name {wildcards.sample} {input.bams} {output} 2> {log}"
 
 
