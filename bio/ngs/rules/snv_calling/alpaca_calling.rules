@@ -78,6 +78,17 @@ rule alpaca_combine:
         "alpaca combine {input} {output}"
 
 
+rule alpaca_optimize:
+    input:
+        "snv_calling/{reference}/index.optimized.hdf5"
+    output:
+        "snv_calling/{reference}/index.optimized.hdf5"
+    params:
+        index=ALPACA_INDEX
+    shell:
+        "alpaca optimize {params.index} {output}"
+
+
 rule alpaca_call:
     input:
         "snv_calling/{reference}/index.hdf5"
