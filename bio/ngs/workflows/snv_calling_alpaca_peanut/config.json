@@ -21,6 +21,6 @@
     "alpaca_queries": {
         "somatic": "A - B"
     },
-    "min_qual": 200,
+    "fdr": 0.05,
     "max_strandbias": 50
 }

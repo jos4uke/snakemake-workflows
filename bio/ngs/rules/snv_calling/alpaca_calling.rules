@@ -31,6 +31,8 @@ The heterozygosity parameter shows the default values for homo sapiens.
     },
     "ploidy": 2,
     "heterozygosity": 0.001,
+    "fdr": 0.05,
+    "max_strandbias": 50,
     "alpaca_queries": {
         "somatic": "A - B"
     }
@@ -59,11 +61,13 @@ rule alpaca_index:
         bams=_sample_units("mapping/{reference}/units/{unit}.sorted.bam")
     output:
         "snv_calling/{reference}/{sample}.index.hdf5"
+    log:
+        "snv_calling/log/{reference}/{sample}.index.log"
     threads: 8
     resources: gpu=1
     shell:
         "alpaca --dev gpu --threads {threads} index "
-        "--sample-name {wildcards.sample} {input.bams} {output}"
+        "--sample-name {wildcards.sample} {input.bams} {output} 2> {log}"
 
 
 rule alpaca_combine:
@@ -73,21 +77,25 @@ rule alpaca_combine:
             sample=CONFIG["samples"])
     output:
         "snv_calling/{reference}/index.hdf5"
+    log:
+        "snv_calling/log/{reference}/combine.log"
     resources: gpu=1
     shell:
-        "alpaca --dev gpu combine {input} {output}"
+        "alpaca --dev gpu combine {input} {output} 2> {log}"
 
 
 rule alpaca_call:
     input:
         "snv_calling/{reference}/index.hdf5"
     output:
-        "snv_calling/{reference}/{query}.{min_qual}.{max_strandbias}.vcf"
+        "snv_calling/{reference}/{query}.vcf"
+    log:
+        "snv_calling/log/{reference}/{query}.call.log"
     params:
         query=lambda wildcards: CONFIG["alpaca_queries"][wildcards.query]
     resources: gpu=1
     shell:
-        "alpaca --dev gpu call --min-qual {qual} "
-        "--max-strand-bias {strandbias} "
+        "alpaca --dev gpu call --fdr {CONFIG[fdr]} "
+        "--max-strand-bias {CONFIG[max_strandbias]} "
         "--heterozygosity {CONFIG[heterozygosity]} "
-        "{input} {params.query} > {output}"
+        "{input} {params.query} > {output} 2> {log}"

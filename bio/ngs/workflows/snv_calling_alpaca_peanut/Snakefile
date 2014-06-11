@@ -28,8 +28,11 @@ to be found under the given path, and two units A and B have been sequenced with
     "alpaca_queries": {
         "somatic": "A - B"
     },
-    "min_qual": 200,
-    "max_strandbias": 50
+    "fdr": 0.05,
+    "max_strandbias": 50,
+    "alpaca_queries": {
+        "somatic": "A - B"
+    }
 }
 
 Note the separation between samples and units that allows to have more than
@@ -58,4 +61,4 @@ include:
 
 rule all:
     input:
-        expand("snv_calling/genome/{alpaca_queries}.{min_qual}.{max_strandbias}.vcf", **CONFIG)
+        expand("snv_calling/genome/{alpaca_queries}.vcf", **CONFIG)
