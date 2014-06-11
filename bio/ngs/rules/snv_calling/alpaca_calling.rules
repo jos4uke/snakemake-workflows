@@ -73,8 +73,9 @@ rule alpaca_combine:
             sample=CONFIG["samples"])
     output:
         "snv_calling/{reference}/index.hdf5"
+    resources: gpu=1
     shell:
-        "alpaca combine {input} {output}"
+        "alpaca --dev gpu combine {input} {output}"
 
 
 rule alpaca_call:
