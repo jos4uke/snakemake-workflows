@@ -55,7 +55,6 @@ def _sample_units(pattern):
 
 rule alpaca_index:
     input:
-        "snv_calling/done/init.done",
         _sample_units("mapping/{reference}/units/{unit}.sorted.bam.bai"),
         bams=_sample_units("mapping/{reference}/units/{unit}.sorted.bam")
     output:
@@ -76,17 +75,6 @@ rule alpaca_combine:
         "snv_calling/{reference}/index.hdf5"
     shell:
         "alpaca combine {input} {output}"
-
-
-rule alpaca_optimize:
-    input:
-        "snv_calling/{reference}/index.optimized.hdf5"
-    output:
-        "snv_calling/{reference}/index.optimized.hdf5"
-    params:
-        index=ALPACA_INDEX
-    shell:
-        "alpaca optimize {params.index} {output}"
 
 
 rule alpaca_call:
