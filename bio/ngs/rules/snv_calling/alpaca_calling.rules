@@ -78,10 +78,10 @@ rule alpaca_combine:
     output:
         "snv_calling/{reference}/index.hdf5"
     log:
-        "snv_calling/log/{reference}/combine.log"
+        "snv_calling/log/{reference}/merge.log"
     resources: gpu=1
     shell:
-        "alpaca --dev gpu combine {input} {output} 2> {log}"
+        "alpaca --dev gpu merge {input} {output} 2> {log}"
 
 
 rule alpaca_call:
