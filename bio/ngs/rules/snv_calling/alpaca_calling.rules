@@ -55,10 +55,15 @@ def _sample_units(pattern):
     return apply
 
 
+def _get_ref(wildcards):
+    return CONFIG["references"][wildcards.reference]
+
+
 rule alpaca_index:
     input:
         _sample_units("mapping/{reference}/units/{unit}.sorted.bam.bai"),
-        bams=_sample_units("mapping/{reference}/units/{unit}.sorted.bam")
+        bams=_sample_units("mapping/{reference}/units/{unit}.sorted.bam"),
+        ref=_get_ref
     output:
         "snv_calling/{reference}/{sample}.index.hdf5"
     log:
@@ -67,11 +72,13 @@ rule alpaca_index:
     resources: gpu=1
     shell:
         "alpaca --dev gpu --threads {threads} index --ploidy {CONFIG[ploidy]} "
-        "--sample-name {wildcards.sample} {input.bams} {output} 2> {log}"
+        "--sample-name {wildcards.sample} {input.ref} "
+        "{input.bams} {output} 2> {log}"
 
 
-rule alpaca_combine:
+rule alpaca_merge:
     input:
+        _get_ref,
         expand(
             "snv_calling/{{reference}}/{sample}.index.hdf5",
             sample=CONFIG["samples"])
