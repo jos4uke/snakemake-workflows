@@ -74,7 +74,7 @@ rule fasta_dict:
     input:
         "{prefix}.{suffix}.fasta"
     output:
-        "{prefix}.{suffix,(fasta|fa)(.gz)?}.dict"
+        "{prefix}.{suffix,(fasta|fa)}.dict"
     shell:
         "picard-tools CreateSequenceDictionary REFERENCE={input} "
         "OUTPUT={output}"
