@@ -72,7 +72,7 @@ rule fasta_index:
 
 rule fasta_dict:
     input:
-        "{prefix}.{suffix}.fasta"
+        "{prefix}.{suffix}"
     output:
         "{prefix}.{suffix,(fasta|fa)}.dict"
     shell:
