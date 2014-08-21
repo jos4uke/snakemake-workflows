@@ -4,6 +4,7 @@
 
 """
 Rules for modifying SAM or BAM files.
+Need samtools and picard-tools in your path.
 
 For usage, include this in your workflow.
 """
@@ -67,6 +68,26 @@ rule fasta_index:
         "{prefix}.{suffix,(fasta|fa)}.fai"
     shell:
         "samtools faidx {input}"
+
+
+rule fa_dict:
+    input:
+        "{prefix}.fa"
+    output:
+        "{prefix}.dict"
+    shell:
+        "picard-tools CreateSequenceDictionary REFERENCE={input} "
+        "OUTPUT={output}"
+
+
+rule fasta_dict:
+    input:
+        "{prefix}.fasta"
+    output:
+        "{prefix}.dict"
+    shell:
+        "picard-tools CreateSequenceDictionary REFERENCE={input} "
+        "OUTPUT={output}"
 
 
 rule sample_merge:
