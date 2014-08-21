@@ -72,9 +72,9 @@ rule fasta_index:
 
 rule fasta_dict:
     input:
-        "{prefix}.{suffix}"
+        "{prefix}.fasta"
     output:
-        "{prefix}.{suffix,(fasta|fa)}.dict"
+        "{prefix}.dict"
     shell:
         "picard-tools CreateSequenceDictionary REFERENCE={input} "
         "OUTPUT={output}"
