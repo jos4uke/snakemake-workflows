@@ -31,6 +31,15 @@ rule bam_sort:
         "samtools sort {input} {wildcards.prefix}.sorted"
 
 
+rule bam_sort_name:
+    input:
+        "{prefix}.bam"
+    output:
+        "{prefix}.namesorted.bam"
+    shell:
+        "samtools sort -n {input} {wildcards.prefix}.namesorted"
+
+
 rule sam_to_bam:
     input:
         "{prefix}.sam"
