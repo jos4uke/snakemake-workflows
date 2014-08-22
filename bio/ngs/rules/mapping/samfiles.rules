@@ -4,6 +4,7 @@
 
 """
 Rules for modifying SAM or BAM files.
+Need samtools and picard-tools in your path.
 
 For usage, include this in your workflow.
 """
@@ -56,6 +57,36 @@ rule bam_stats:
         "{prefix}.stats.txt"
     shell:
         "samtools idxstats {input} > {output}"
+
+
+rule bam_measure_insert_size:
+    input:
+        "{prefix}.sorted.bam"
+    output:
+        txt="{prefix}.insert_size.txt",
+        pdf="{prefix}.insert_size_histogram.pdf"
+    shell:
+        "picard-tools CollectInsertSizeMetrics INPUT={input} "
+        "OUTPUT={output.txt} HISTOGRAM_FILE={output.pdf}"
+
+
+rule fasta_index:
+    input:
+        "{prefix}.{suffix}"
+    output:
+        "{prefix}.{suffix,(fasta|fa)}.fai"
+    shell:
+        "samtools faidx {input}"
+
+
+rule fasta_dict:
+    input:
+        "{prefix}.fasta"
+    output:
+        "{prefix}.dict"
+    shell:
+        "picard-tools CreateSequenceDictionary REFERENCE={input} "
+        "OUTPUT={output}"
 
 
 rule sample_merge:
