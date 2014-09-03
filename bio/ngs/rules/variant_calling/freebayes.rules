@@ -12,7 +12,9 @@ vcf-concat from vcftools
 
 For usage, include this in your workflow.
 
-Expects a global variable CONFIG (e.g. parsed from json) of at least the
+Expects a global variable config
+(see https://bitbucket.org/johanneskoester/snakemake/wiki/Documentation#markdown-header-configuration)
+of at least the
 following structure, assuming that the desired reference sequence is some genome
 to be found under the given path, and two units A and B have been sequenced.
 The heterozygosity parameters show the default values for homo sapiens.
@@ -50,7 +52,7 @@ import csv
 
 
 def _get_ref(wildcards):
-    return CONFIG["references"][wildcards.reference]
+    return config["references"][wildcards.reference]
 
 
 def _get_chroms(pattern):
@@ -70,7 +72,7 @@ def _get_units(pattern):
         return expand(
             pattern, reference=wildcards.reference,
             unit=[
-                unit for sample in CONFIG["samples"].values()
+                unit for sample in config["samples"].values()
                 for unit in sample
             ])
     return apply
@@ -84,13 +86,13 @@ rule freebayes:
     output:
         "variant_calling/{reference}/all.{chrom}.vcf"
     params:
-        custom=CONFIG.get("params_freebayes", "")
+        custom=config.get("params_freebayes", "")
     log:
         "variant_calling/log/{reference}/all.{chrom}.genotype.log"
     shell:
         "freebayes -r {wildcards.chrom} "
-        "--ploidy {CONFIG[ploidy]} --fasta-reference {input.ref} "
-        "--theta {CONFIG[heterozygosity]} {params.custom} "
+        "--ploidy {config[ploidy]} --fasta-reference {input.ref} "
+        "--theta {config[heterozygosity]} {params.custom} "
         "{input.bams} > {output}"
 
 

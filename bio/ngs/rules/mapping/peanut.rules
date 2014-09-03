@@ -7,7 +7,9 @@ Read mapping with PEANUT (http://peanut.readthedocs.org).
 
 For usage, include this in your workflow.
 
-Expects a global variable CONFIG (e.g. parsed from json) of at least the
+Expects a global variable config
+(see https://bitbucket.org/johanneskoester/snakemake/wiki/Documentation#markdown-header-configuration)
+of at least the
 following structure, assuming that the desired reference sequence is some genome
 to be found under the given path, and two units A and B have been sequenced with Illumina, 
 the first paired and the second single end:
@@ -41,19 +43,19 @@ __license__ = "MIT"
 
 
 UNIT_TO_SAMPLE = {
-    unit: sample for sample, units in CONFIG["samples"].items()
+    unit: sample for sample, units in config["samples"].items()
     for unit in units}
 
 
 rule peanut_map:
     input:
-        lambda wildcards: CONFIG["units"][wildcards.unit],
-        lambda wildcards: CONFIG["references"][wildcards.reference]
+        lambda wildcards: config["units"][wildcards.unit],
+        lambda wildcards: config["references"][wildcards.reference]
     output:
         "mapping/{reference}/units/{unit}.bam"
     params:
         sample=lambda wildcards: UNIT_TO_SAMPLE[wildcards.unit],
-        custom=CONFIG.get("params_peanut", "")
+        custom=config.get("params_peanut", "")
     log:
         "mapping/log/{reference}/{unit}.log"
     threads: 8
@@ -61,6 +63,6 @@ rule peanut_map:
     shell:
         "peanut map {params.custom} "
         "--read-group ID:{wildcards.unit} "
-        "SM:{params.sample} PL:{CONFIG[platform]} "
+        "SM:{params.sample} PL:{config[platform]} "
         "--threads {threads} {input} 2> {log} "
         "| samtools view -Sbh - > {output}"

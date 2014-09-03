@@ -97,7 +97,7 @@ rule sample_merge:
     input:
         lambda wildcards: expand(
             "mapping/{reference}/units/{unit}.bam",
-            unit=CONFIG["samples"][wildcards.sample])
+            unit=config["samples"][wildcards.sample])
     output:
         "mapping/{reference}/samples/{sample}.bam"
     run:

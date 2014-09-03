@@ -8,7 +8,9 @@ can be recalibrated.
 
 For usage, include this in your workflow.
 
-Expects a global variable CONFIG (e.g. parsed from json) of at least the
+Expects a global variable config
+(see https://bitbucket.org/johanneskoester/snakemake/wiki/Documentation#markdown-header-configuration)
+of at least the
 following structure, assuming that the desired reference sequence is some genome
 to be found under the given path:
 
@@ -31,7 +33,7 @@ __license__ = "MIT"
 
 
 def _get_ref(wildcards):
-    return CONFIG["references"][wildcards.reference]
+    return config["references"][wildcards.reference]
 
 
 rule gatk_realign_info:
@@ -42,14 +44,14 @@ rule gatk_realign_info:
     output:
         temp("mapping/{reference,[^/]+}/{prefix}.realign.intervals")
     params:
-        custom=CONFIG.get("params_gatk", "")
+        custom=config.get("params_gatk", "")
     log:
         "mapping/log/{reference}/{prefix}.realign_info.log"
     threads: 8
     shell:
         "gatk -T RealignerTargetCreator -R {input.ref} {params.custom} "
         "-nt {threads} "
-        "-I {input.bam} -known {CONFIG[known_variants][dbsnp]} "
+        "-I {input.bam} -known {config[known_variants][dbsnp]} "
         "-o {output} >& {log}"
 
 
@@ -61,7 +63,7 @@ rule gatk_realign_bam:
     output:
         "mapping/{reference,[^/]+}/{prefix}.realigned.bam"
     params:
-        custom=CONFIG.get("params_gatk", "")
+        custom=config.get("params_gatk", "")
     log:
         "mapping/log/{reference}/{prefix}.realign.log"
     shell:
@@ -79,14 +81,14 @@ rule gatk_recalibrate_info:
     output:
         temp("mapping/{reference,[^/]+}/{prefix}.recalibrate.grp")
     params:
-        custom=CONFIG.get("params_gatk", "")
+        custom=config.get("params_gatk", "")
     log:
         "mapping/log/{reference}/{prefix}.recalibrate_info.log"
     threads: 8
     shell:
         "gatk -T BaseRecalibrator -R {input.ref} {params.custom} "
         "-nct {threads} "
-        "-I {input.bam} -knownSites {CONFIG[known_variants][dbsnp]} "
+        "-I {input.bam} -knownSites {config[known_variants][dbsnp]} "
         "-o {output} >& {log}"
 
 
@@ -98,7 +100,7 @@ rule gatk_recalibrate_bam:
     output:
         "mapping/{reference,[^/]+}/{prefix}.recalibrated.bam"
     params:
-        custom=CONFIG.get("params_gatk", "")
+        custom=config.get("params_gatk", "")
     log:
         "mapping/log/{reference}/{prefix}.recalibrate.log"
     threads: 8

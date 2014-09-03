@@ -45,11 +45,7 @@ __author__ = "Johannes Köster (http://johanneskoester.bitbucket.org)"
 __license__ = "MIT"
 
 
-import json
-
-
-with open("config.json") as f:
-    CONFIG = json.load(f)
+configfile: "config.json"
 
 
 include:
