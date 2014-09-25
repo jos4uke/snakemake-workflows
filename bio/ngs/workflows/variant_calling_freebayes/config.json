@@ -1,0 +1,18 @@
+{
+    "references": {
+        "genome": "path/to/genome.fasta"
+    },
+    "samples": {
+        "A": ["A"],
+        "B": ["B"]
+    },
+    "units": {
+        "A":
+            ["path/to/A_R1.fastq.gz", "path/to/A_R2.fastq.gz"],
+        "B":
+            ["path/to/B.fastq.gz"]
+    },
+    "platform": "Illumina",
+    "ploidy": 2,
+    "heterozygosity": 0.001
+}

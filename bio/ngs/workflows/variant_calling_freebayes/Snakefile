@@ -3,8 +3,8 @@
 
 
 """
-GATK variant calling following the best practices guide.
-Needs at least GATK 3.0, available in your PATH as "gatk".
+Variant calling with Freebayes:
+https://github.com/ekg/freebayes
 
 Expects a json config file with the following structure, assuming that the
 desired reference sequence is some genome
@@ -24,16 +24,9 @@ to be found under the given path, and two units A and B have been sequenced with
         "B":
             ["path/to/B.fastq.gz"]
     },
-    "known_variants": {
-        "dbsnp": "path/to/dbsnp.vcf",
-        "hapmap": "path/to/hapmap_3.3.vcf",
-        "g1k": "path/to/1000G_phase1.snps.high_confidence.vcf",
-        "omni": "path/to/1000G_omni2.5.vcf",
-        "mills": "path/to/Mills_and_1000G_gold_standard.indels.vcf"
-    },
     "platform": "Illumina",
+    "ploidy": 2,
     "heterozygosity": 0.001,
-    "indel_heterozygosity": 1.25E-4
 }
 
 Note the separation between samples and units that allows to have more than
@@ -52,14 +45,10 @@ include:
     "https://bitbucket.org/johanneskoester/snakemake-workflows/raw/master/bio/ngs/rules/mapping/bwa_mem.rules"
 include: 
     "https://bitbucket.org/johanneskoester/snakemake-workflows/raw/master/bio/ngs/rules/mapping/samfiles.rules"
-include: 
-    "https://bitbucket.org/johanneskoester/snakemake-workflows/raw/master/bio/ngs/rules/mapping/gatk.rules"
 include:
-    "https://bitbucket.org/johanneskoester/snakemake-workflows/raw/master/bio/ngs/rules/variant_calling/gatk_haplotype_caller.rules"
-include:
-    "https://bitbucket.org/johanneskoester/snakemake-workflows/raw/master/bio/ngs/rules/variant_calling/gatk_variant_recalibrator.rules"
+    "https://bitbucket.org/johanneskoester/snakemake-workflows/raw/master/bio/ngs/rules/variant_calling/freebayes.rules"
 
 
 rule all:
     input:
-        "variant_calling/genome/all.snp_recalibrated.indel_recalibrated.vcf"
+        "variant_calling/genome/all.vcf"
