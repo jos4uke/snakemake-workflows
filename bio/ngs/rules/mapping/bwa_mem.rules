@@ -6,8 +6,9 @@ Read mapping with BWA MEM (http://bio-bwa.sourceforge.net).
 
 For usage, include this in your workflow.
 
-Expects a global variable CONFIG (e.g. parsed from json) of at least the
-following structure, assuming that the desired reference sequence is some genome
+Expects the global variable config
+(see https://bitbucket.org/johanneskoester/snakemake/wiki/Documentation#markdown-header-configuration)
+of at least the following structure, assuming that the desired reference sequence is some genome
 to be found under the given path, and two units A and B have been sequenced with Illumina, 
 the first paired and the second single end:
 
@@ -40,7 +41,7 @@ __license__ = "MIT"
 
 
 UNIT_TO_SAMPLE = {
-    unit: sample for sample, units in CONFIG["samples"].items()
+    unit: sample for sample, units in config["samples"].items()
     for unit in units}
 
 
@@ -49,19 +50,19 @@ from snakemake.exceptions import MissingInputException
 
 rule bwa_mem_map:
     input:
-        lambda wildcards: CONFIG["references"][wildcards.reference],
-        lambda wildcards: CONFIG["units"][wildcards.unit]
+        lambda wildcards: config["references"][wildcards.reference],
+        lambda wildcards: config["units"][wildcards.unit]
     output:
         "mapping/{reference}/units/{unit}.bam"
     params:
         sample=lambda wildcards: UNIT_TO_SAMPLE[wildcards.unit],
-        custom=CONFIG.get("params_bwa_mem", "")
+        custom=config.get("params_bwa_mem", "")
     log:
         "mapping/log/{reference}/{unit}.log"
     threads: 8
     shell:
         "bwa mem {params.custom} "
         r"-R '@RG\tID:{wildcards.unit}\t"
-        "SM:{params.sample}\tPL:{CONFIG[platform]}' "
+        "SM:{params.sample}\tPL:{config[platform]}' "
         "-t {threads} {input}  2> {log} "
         "| samtools view -Sbh - > {output}"
