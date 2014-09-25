@@ -7,9 +7,9 @@ ALPACA SNV calling.
 
 For usage, include this in your workflow.
 
-Expects a global variable CONFIG (e.g. parsed from json) of at least the
-following structure, assuming that the desired reference sequence is some genome
-to be found under the given path, and two units A and B have been sequenced.
+Expects a global variable config (e.g. parsed from json with configfile keyword)
+of at least the following structure, assuming that the desired reference sequence
+is some genome to be found under the given path, and two units A and B have been sequenced.
 The heterozygosity parameter shows the default values for homo sapiens.
 
 {
@@ -51,12 +51,12 @@ def _sample_units(pattern):
     def apply(wildcards):
         return expand(
             pattern, reference=wildcards.reference,
-            unit=CONFIG["samples"][wildcards.sample])
+            unit=config["samples"][wildcards.sample])
     return apply
 
 
 def _get_ref(wildcards):
-    return CONFIG["references"][wildcards.reference]
+    return config["references"][wildcards.reference]
 
 
 rule alpaca_index:
@@ -71,7 +71,7 @@ rule alpaca_index:
     threads: 8
     resources: gpu=1
     shell:
-        "alpaca --dev gpu --threads {threads} index --ploidy {CONFIG[ploidy]} "
+        "alpaca --dev gpu --threads {threads} index --ploidy {config[ploidy]} "
         "--sample-name {wildcards.sample} {input.ref} "
         "{input.bams} {output} 2> {log}"
 
@@ -81,7 +81,7 @@ rule alpaca_merge:
         _get_ref,
         expand(
             "snv_calling/{{reference}}/{sample}.index.hdf5",
-            sample=CONFIG["samples"])
+            sample=config["samples"])
     output:
         "snv_calling/{reference}/index.hdf5"
     log:
@@ -99,10 +99,10 @@ rule alpaca_call:
     log:
         "snv_calling/log/{reference}/{query}.call.log"
     params:
-        query=lambda wildcards: CONFIG["alpaca_queries"][wildcards.query]
+        query=lambda wildcards: config["alpaca_queries"][wildcards.query]
     resources: gpu=1
     shell:
-        "alpaca --dev gpu call --fdr {CONFIG[fdr]} "
-        "--max-strand-bias {CONFIG[max_strandbias]} "
-        "--heterozygosity {CONFIG[heterozygosity]} "
+        "alpaca --dev gpu call --fdr {config[fdr]} "
+        "--max-strand-bias {config[max_strandbias]} "
+        "--heterozygosity {config[heterozygosity]} "
         "{input} '{params.query}' > {output} 2> {log}"

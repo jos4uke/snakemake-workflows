@@ -44,11 +44,7 @@ __author__ = "Johannes Köster"
 __license__ = "MIT"
 
 
-import json
-
-
-with open("config.json") as f:
-    CONFIG = json.load(f)
+configfile: "config.json"
 
 
 include:
@@ -61,4 +57,4 @@ include:
 
 rule all:
     input:
-        expand("snv_calling/genome/{alpaca_queries}.vcf", alpaca_queries=CONFIG["alpaca_queries"])
+        expand("snv_calling/genome/{alpaca_queries}.vcf", alpaca_queries=config["alpaca_queries"])
