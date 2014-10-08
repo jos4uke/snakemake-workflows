@@ -93,7 +93,7 @@ rule freebayes:
         "freebayes -r {wildcards.chrom} "
         "--ploidy {config[ploidy]} --fasta-reference {input.ref} "
         "--theta {config[heterozygosity]} {params.custom} "
-        "{input.bams} > {output}"
+        "{input.bams} > {output} 2> {log}"
 
 
 rule freebayes_merge:
