@@ -76,7 +76,7 @@ rule gatk_haplotype_caller:
         custom=config.get("params_gatk", "")
     log:
         "variant_calling/log/{reference}/{sample}.genotype_info.log"
-    threads: 8
+    threads: 2  # haplotype caller currently does not reliably use more than 2 threads
     run:
         bams = _gatk_multi_arg("-I", input.bams)
         shell(
@@ -100,7 +100,7 @@ rule gatk_genotyping:
         custom=config.get("params_gatk", "")
     log:
         "variant_calling/log/{reference}/all.genotype.log"
-    threads: 8
+    threads: 16
     run:
         gvcfs = _gatk_multi_arg("--variant", input.gvcfs)
         shell(
