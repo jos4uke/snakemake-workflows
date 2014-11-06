@@ -1,0 +1,16 @@
+{
+    "references": {
+        "genome": "genome.fasta"
+    },
+    "samples": {
+        "A": ["A"],
+        "B": ["B"]
+    },
+    "units": {
+        "A": ["A.fastq"],
+        "B": ["B.fastq"]
+    },
+    "platform": "Illumina",
+    "ploidy": 2,
+    "heterozygosity": 0.001
+}
