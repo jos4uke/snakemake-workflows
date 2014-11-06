@@ -70,7 +70,7 @@ rule alpaca_index:
         "--sample-name {wildcards.sample} {input.bams} {output} 2> {log}"
 
 
-rule alpaca_combine:
+rule alpaca_merge:
     input:
         expand(
             "snv_calling/{{reference}}/{sample}.index.hdf5",
