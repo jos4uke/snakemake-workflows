@@ -19,9 +19,6 @@ to be found under the given path, and two units A and B have been sequenced with
         "B":
             ["path/to/B.fastq.gz"]
     },
-    "known_variants": {
-        "dbsnp": "path/to/dbsnp.vcf"
-    },
     "platform": "Illumina",
     "ploidy": 2,
     "heterozygosity": 0.001,

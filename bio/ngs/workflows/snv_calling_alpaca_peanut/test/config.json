@@ -1,16 +1,14 @@
 {
     "references": {
-        "genome": "path/to/genome.fasta"
+        "genome": "genome.fasta"
     },
     "samples": {
         "A": ["A"],
         "B": ["B"]
     },
     "units": {
-        "A":
-            ["path/to/A_R1.fastq.gz", "path/to/A_R2.fastq.gz"],
-        "B":
-            ["path/to/B.fastq.gz"]
+        "A": ["A.fastq"],
+        "B": ["B.fastq"]
     },
     "platform": "Illumina",
     "ploidy": 2,
