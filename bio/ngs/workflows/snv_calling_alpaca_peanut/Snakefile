@@ -1,0 +1,57 @@
+"""
+ALPACA and PEANUT based SNV calling workflow.
+
+Expects a json config file with the following structure, assuming that the
+desired reference sequence is some genome
+to be found under the given path, and two units A and B have been sequenced with Illumina.
+
+{
+    "references": {
+        "genome": "path/to/genome.fasta"
+    },
+    "samples": {
+        "A": ["A"],
+        "B": ["B"]
+    },
+    "units": {
+        "A":
+            ["path/to/A_R1.fastq.gz", "path/to/A_R2.fastq.gz"],
+        "B":
+            ["path/to/B.fastq.gz"]
+    },
+    "platform": "Illumina",
+    "ploidy": 2,
+    "heterozygosity": 0.001,
+    "alpaca_queries": {
+        "somatic": "A - B"
+    },
+    "fdr": 0.05,
+    "max_strandbias": 50,
+    "alpaca_queries": {
+        "somatic": "A - B"
+    }
+}
+
+Note the separation between samples and units that allows to have more than
+one sequencing run for each sample, or multiple lanes per sample.
+"""
+
+
+__author__ = "Johannes Köster"
+__license__ = "MIT"
+
+
+configfile: "config.json"
+
+
+include:
+    "https://bitbucket.org/johanneskoester/snakemake-workflows/raw/master/bio/ngs/rules/mapping/peanut.rules"
+include: 
+    "https://bitbucket.org/johanneskoester/snakemake-workflows/raw/master/bio/ngs/rules/mapping/samfiles.rules"
+include:
+    "https://bitbucket.org/johanneskoester/snakemake-workflows/raw/master/bio/ngs/rules/snv_calling/alpaca_calling.rules"
+
+
+rule all:
+    input:
+        expand("snv_calling/genome/{alpaca_queries}.vcf", alpaca_queries=config["alpaca_queries"])
