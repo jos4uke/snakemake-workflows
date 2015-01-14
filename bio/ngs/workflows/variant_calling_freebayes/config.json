@@ -12,6 +12,8 @@
         "B":
             ["path/to/B.fastq.gz"]
     },
+    "snakemake_workflow_folder":
+        "https://bitbucket.org/johanneskoester/snakemake-workflows/raw/master",
     "platform": "Illumina",
     "ploidy": 2,
     "heterozygosity": 0.001

@@ -31,6 +31,8 @@ to be found under the given path, and two units A and B have been sequenced with
         "omni": "path/to/1000G_omni2.5.vcf",
         "mills": "path/to/Mills_and_1000G_gold_standard.indels.vcf"
     },
+    "snakemake_workflow_folder":
+        "https://bitbucket.org/johanneskoester/snakemake-workflows/raw/master",
     "platform": "Illumina",
     "heterozygosity": 0.001,
     "indel_heterozygosity": 1.25E-4
@@ -49,15 +51,15 @@ configfile: "config.json"
 
 
 include:
-    "https://bitbucket.org/johanneskoester/snakemake-workflows/raw/master/bio/ngs/rules/mapping/bwa_mem.rules"
+    config["snakemake_workflow_folder"] + "/bio/ngs/rules/mapping/bwa_mem.rules"
 include: 
-    "https://bitbucket.org/johanneskoester/snakemake-workflows/raw/master/bio/ngs/rules/mapping/samfiles.rules"
+    config["snakemake_workflow_folder"] + "/bio/ngs/rules/mapping/samfiles.rules"
 include: 
-    "https://bitbucket.org/johanneskoester/snakemake-workflows/raw/master/bio/ngs/rules/mapping/gatk.rules"
+    config["snakemake_workflow_folder"] + "/bio/ngs/rules/mapping/gatk.rules"
 include:
-    "https://bitbucket.org/johanneskoester/snakemake-workflows/raw/master/bio/ngs/rules/variant_calling/gatk_haplotype_caller.rules"
+    config["snakemake_workflow_folder"] + "/bio/ngs/rules/variant_calling/gatk_haplotype_caller.rules"
 include:
-    "https://bitbucket.org/johanneskoester/snakemake-workflows/raw/master/bio/ngs/rules/variant_calling/gatk_variant_recalibrator.rules"
+    config["snakemake_workflow_folder"] + "/bio/ngs/rules/variant_calling/gatk_variant_recalibrator.rules"
 
 
 rule all:

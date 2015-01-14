@@ -24,6 +24,8 @@ to be found under the given path, and two units A and B have been sequenced with
         "B":
             ["path/to/B.fastq.gz"]
     },
+    "snakemake_workflow_folder":
+        "https://bitbucket.org/johanneskoester/snakemake-workflows/raw/master",
     "platform": "Illumina",
     "ploidy": 2,
     "heterozygosity": 0.001,
@@ -42,11 +44,11 @@ configfile: "config.json"
 
 
 include:
-    "https://bitbucket.org/johanneskoester/snakemake-workflows/raw/master/bio/ngs/rules/mapping/bwa_mem.rules"
+    config["snakemake_workflow_folder"] + "/bio/ngs/rules/mapping/bwa_mem.rules"
 include: 
-    "https://bitbucket.org/johanneskoester/snakemake-workflows/raw/master/bio/ngs/rules/mapping/samfiles.rules"
+    config["snakemake_workflow_folder"] + "/bio/ngs/rules/mapping/samfiles.rules"
 include:
-    "https://bitbucket.org/johanneskoester/snakemake-workflows/raw/master/bio/ngs/rules/variant_calling/freebayes.rules"
+    config["snakemake_workflow_folder"] + "/bio/ngs/rules/variant_calling/freebayes.rules"
 
 
 rule all:
