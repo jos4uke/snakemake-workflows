@@ -60,7 +60,7 @@ def _sample_to_units(pattern):
 
 
 def _gatk_multi_arg(flag, files):
-    flag += " "
+    flag = " " + flag + " "
     return flag + flag.join(files)
 
 
