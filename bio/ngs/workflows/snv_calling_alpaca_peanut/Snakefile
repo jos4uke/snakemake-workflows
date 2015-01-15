@@ -45,7 +45,7 @@ configfile: "config.json"
 
 include_prefix="https://bitbucket.org/johanneskoester/snakemake-workflows/raw/master"
 
-Include:
+include:
     include_prefix + "/bio/ngs/rules/mapping/peanut.rules"
 include: 
     include_prefix + "/bio/ngs/rules/mapping/samfiles.rules"
