@@ -61,7 +61,7 @@ def _sample_to_units(pattern):
 
 def _gatk_multi_arg(flag, files):
     flag += " "
-    return flag + flag.join(files)
+    return " ".join(flag + f for f in files)
 
 
 rule gatk_haplotype_caller:

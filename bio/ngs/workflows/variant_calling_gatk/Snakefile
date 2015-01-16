@@ -47,17 +47,18 @@ __license__ = "MIT"
 
 configfile: "config.json"
 
+include_prefix="https://bitbucket.org/johanneskoester/snakemake-workflows/raw/master"
 
 include:
-    "https://bitbucket.org/johanneskoester/snakemake-workflows/raw/master/bio/ngs/rules/mapping/bwa_mem.rules"
+    include_prefix + "/bio/ngs/rules/mapping/bwa_mem.rules"
 include: 
-    "https://bitbucket.org/johanneskoester/snakemake-workflows/raw/master/bio/ngs/rules/mapping/samfiles.rules"
+    include_prefix + "/bio/ngs/rules/mapping/samfiles.rules"
 include: 
-    "https://bitbucket.org/johanneskoester/snakemake-workflows/raw/master/bio/ngs/rules/mapping/gatk.rules"
+    include_prefix + "/bio/ngs/rules/mapping/gatk.rules"
 include:
-    "https://bitbucket.org/johanneskoester/snakemake-workflows/raw/master/bio/ngs/rules/variant_calling/gatk_haplotype_caller.rules"
+    include_prefix + "/bio/ngs/rules/variant_calling/gatk_haplotype_caller.rules"
 include:
-    "https://bitbucket.org/johanneskoester/snakemake-workflows/raw/master/bio/ngs/rules/variant_calling/gatk_variant_recalibrator.rules"
+    include_prefix + "/bio/ngs/rules/variant_calling/gatk_variant_recalibrator.rules"
 
 
 rule all:
