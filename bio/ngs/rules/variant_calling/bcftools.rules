@@ -1,0 +1,32 @@
+# vim: syntax=python tabstop=4 expandtab
+# coding: utf-8
+
+
+"""
+Rules for modifying BCF files.
+Need bcftools in your $PATH.
+
+For usage, include this in your workflow.
+"""
+
+
+__author__ = "Johannes Köster (http://johanneskoester.bitbucket.org)"
+__license__ = "MIT"
+
+
+rule bcf_index:
+    input:
+        "{prefix}.bcf"
+    output:
+        "{prefix}.bcf.csi"
+    shell:
+        "bcftools index {input}"
+
+
+rule bcf_to_vcf:
+    input:
+        "{prefix}.bcf"
+    output:
+        "{prefix}.vcf"
+    shell:
+        "bcftools view {input} > {output}"
