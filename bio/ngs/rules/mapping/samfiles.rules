@@ -52,11 +52,12 @@ rule sam_to_bam:
 
 rule bam_stats:
     input:
-        "{prefix}.bam"
+        bam="{prefix}.bam",
+        bai="{prefix}.bam.bai"
     output:
         "{prefix}.stats.txt"
     shell:
-        "samtools idxstats {input} > {output}"
+        "samtools idxstats {input.bam} > {output}"
 
 
 rule bam_measure_insert_size:
