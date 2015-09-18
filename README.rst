@@ -1,3 +1,5 @@
+[![Snakemake](https://img.shields.io/badge/snakemake-3.3-brightgreen.svg?style=flat-square)](https://bitbucket.org/johanneskoester/snakemake)
+
 The Snakemake Workflow Repository
 =================================
 
